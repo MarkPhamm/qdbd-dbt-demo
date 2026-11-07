@@ -61,13 +61,24 @@ with_seat_configuration as (
 
 ),
 
+with_cabin as (
+
+    select
+        wsc.*,
+        dcb.cabin_id,
+    from with_seat_configuration as wsc
+    left join {{ ref('dim_cabin') }} as dcb
+        on wsc.seat_type = dcb.cabin_name
+
+),
+
 with_dates as (
 
     select
         wsc.*,
         ds.date_id as date_submitted_id,
         df.date_id as date_flown_id,
-    from with_seat_configuration as wsc
+    from with_cabin as wsc
     left join {{ ref('dim_date') }} as ds
         on wsc.date_submitted = ds.date_id
     left join {{ ref('dim_date') }} as df
@@ -91,6 +102,7 @@ final as (
         airline_id,
         aircraft_id,
         seat_configuration_id,
+        cabin_id,
         customer_id,
         date_submitted_id,
         date_flown_id,
@@ -119,6 +131,7 @@ final as (
         customer_id is not null
         and aircraft_id is not null
         and seat_configuration_id is not null
+        and cabin_id is not null
         and date_submitted_id is not null
         and {{ valid_ratings_filter(rating_columns) }}
 

@@ -64,6 +64,22 @@ models:
         description: Latest date_submitted for this reviewer, across all subjects.
         data_type: date
 
+  - name: dim_cabin
+    description: "Conformed cabin dimension. Grain: one row per cabin across airline and seat reviews."
+    columns:
+      - name: cabin_id
+        description: Primary key - surrogate hash of cabin_name.
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: cabin_name
+        description: "Economy Class, Premium Economy, Business Class, First Class or unknown."
+        data_type: varchar
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Economy Class', 'Premium Economy', 'Business Class', 'First Class', 'unknown']
+
   - name: dim_aircraft
     description: "Conformed aircraft dimension. Grain: one row per aircraft model string across airline and seat reviews."
     columns:

@@ -80,12 +80,23 @@ with_aircraft as (
 
 ),
 
-with_ratings as (
+with_cabin as (
 
     select
         wa.*,
-        {{ average_rating(rating_columns) }} as average_rating,
+        dcb.cabin_id,
     from with_aircraft as wa
+    left join {{ ref('dim_cabin') }} as dcb
+        on wa.seat_type = dcb.cabin_name
+
+),
+
+with_ratings as (
+
+    select
+        wcb.*,
+        {{ average_rating(rating_columns) }} as average_rating,
+    from with_cabin as wcb
 
 ),
 
@@ -101,8 +112,8 @@ final as (
         destination_location_id,
         transit_location_id,
         aircraft_id,
+        cabin_id,
         is_verified,
-        seat_type,
         type_of_traveller,
         transit_city != 'unknown' as has_layover,
         seat_comfort,
@@ -130,6 +141,7 @@ final as (
         and destination_location_id is not null
         and transit_location_id is not null
         and aircraft_id is not null
+        and cabin_id is not null
         -- Every rating is unscored (null) or a valid 1-5 score.
         and {{ valid_ratings_filter(rating_columns) }}
 
