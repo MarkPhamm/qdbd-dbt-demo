@@ -12,6 +12,8 @@ airline_id PK
 airline_name
 airline_name_cleaned
 
+# Shown after the yml description: the source has no reviewer id, so do not
+# count this table as people.
 dim_customer
 -
 customer_id PK

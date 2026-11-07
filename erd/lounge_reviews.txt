@@ -17,7 +17,9 @@ wifi_connectivity
 staff_service
 recommended
 average_rating
-rating_band
+# Typed here, so the yml data_type (varchar) does not replace it. Base types
+# still agree, so --strict stays clean.
+rating_band varchar(7)
 review_text
 source_updated_at
 dbt_loaded_at

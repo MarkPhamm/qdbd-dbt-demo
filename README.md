@@ -1,6 +1,6 @@
 # qdbd-dbt-demo
 
-A dbt project on DuckDB, built so [qdbd](https://qdbd.dev/) has something real to draw. The ERD in `erd/` is written by hand. Descriptions and column types come from the dbt yml, through one `# @dbt: ..` line, with no `manifest.json`. CI fails when the two disagree. Each environment (dev, qa, prod) publishes its own diagram, and qa and dev highlight what promoting them would change.
+A dbt project on DuckDB, built so [qdbd](https://qdbd.dev/) has something real to draw. The ERD in `erd/` is written by hand. Descriptions, tags and column types come from the dbt yml, through one `# @dbt: ..` line, with no `manifest.json`. CI fails when the two disagree. Each environment (dev, qa, prod) publishes its own diagram, and qa and dev highlight what promoting them would change.
 
 The data is a sample of the Skytrax reviews from [skytrax_reviews_data](https://github.com/MarkPhamm/skytrax_reviews_data), modelled the same way: four star schemas on one shared set of dimensions. The CI/CD follows [dbt_duckdb_cicd_template](https://github.com/MarkPhamm/dbt_duckdb_cicd_template).
 
@@ -59,23 +59,47 @@ Grain of every fact: one row per review submission. Row counts are for the commi
 
 Skytrax reviews are self-reported. Anything built on them is directional, not population-level.
 
-## The diagram
+## The diagram: `# @dbt: ..`
 
-`erd/` is five files, one per star schema. qdbd compiles the folder as one schema, so `fct_lounge_review` in `lounge_reviews.txt` can point at `dim_customer` in `conformed.txt`.
+`erd/` is five hand-written files, one per star schema. The first lines of `erd/conformed.txt` are:
 
-The tables, columns and relationships are written by hand. Everything else comes from the yml, through `# @dbt: ..` at the top of `erd/conformed.txt`:
+```text
+# @dbt: ..
+```
 
-| In the diagram | From |
+That line names the folder holding `dbt_project.yml`, relative to the file. qdbd then reads the project's yml and `.md` files directly and adds them to the diagram. No `manifest.json`, no `dbt parse`, no build. The line covers every file in the folder, so `fct_lounge_review` in `lounge_reviews.txt` gets its yml too, and can point at `dim_customer` in `conformed.txt`.
+
+Tables match dbt models by name, ignoring case. Columns match by name. Your `.txt` is never changed.
+
+| What qdbd adds | Where to see it here |
 |---|---|
-| Table description | the model's `description` |
-| Column description | the column's `description`; `average_rating` and `rating_band` come from `{% docs %}` blocks in `models/docs.md` |
-| Column type | the column's `data_type` |
-| Header colour | the name: `dim_` and `fct_` are tagged and coloured without any config |
+| Table descriptions | Every table. `dim_customer` shows its yml description first, then the comment written above it in `erd/conformed.txt` |
+| Column descriptions | Every column with one. `average_rating` and `rating_band` come from `{% docs %}` blocks in `models/docs.md` |
+| Column types | Every column the `.txt` leaves untyped is filled from `data_type`. `fct_lounge_review.rating_band` is typed `varchar(7)` in the file, so it keeps that |
+| Tags | `customer_name` and `nationality` are tagged `pii` in `models/conformed/_conformed__models.yml`, so their rows are tinted. Try the filter `tag:pii` |
 
-`qdbd check --strict erd` fails when they drift: a column in the diagram that the yml does not list, a yml column missing from the diagram, a type that disagrees, or a table with no dbt model. `dim_route` in `erd/airline_reviews.txt` is planned and not built. `# @dbt: none` above it keeps the check quiet.
+Header colours come from the names: `dim_` and `fct_` are tagged and coloured with no config.
+
+### Drift warnings
+
+Anything the `.txt` and the yml disagree on becomes a `dbt:` warning: a column on one side only, a type with a different base type, a table with no dbt model. Add `has_shower` under `staff_service` in `erd/lounge_reviews.txt`, then:
+
+```console
+$ qdbd check erd
+erd/lounge_reviews.txt:18: warning: dbt: column 'has_shower' is not in the yml for 'fct_lounge_review' (models/lounge_reviews/_lounge_reviews__models.yml:26)
+No errors found (1 warning(s)).
+$ qdbd check --strict erd; echo $?
+1
+```
+
+CI runs the strict check on every pull request.
+
+`dim_route` in `erd/airline_reviews.txt` is planned, not built. `# @dbt: none` above it skips it, so the check stays quiet.
+
+### Commands
 
 ```bash
-qdbd serve erd                     # then open fct_lounge_review
+qdbd serve erd                     # then open dim_customer
 qdbd check --strict erd
 qdbd build erd -o /tmp/erd.html
 qdbd build erd -s group:lounge_reviews -o /tmp/lounge.html
