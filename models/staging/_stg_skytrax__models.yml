@@ -1,0 +1,127 @@
+version: 2
+
+models:
+  - name: stg_skytrax__airlines
+    description: "Airline lookup. Grain: one row per airline_id."
+    columns:
+      - name: airline_id
+        description: Natural key for an airline, assigned by the source system.
+        data_tests: [unique, not_null]
+      - name: airline_name
+        description: Airline name as published on Skytrax.
+        data_tests: [not_null]
+
+  - name: stg_skytrax__airports
+    description: "Airport lookup. Grain: one row per airport_id."
+    columns:
+      - name: airport_id
+        description: Natural key for an airport, assigned by the source system.
+        data_tests: [unique, not_null]
+      - name: airport_name
+        description: Airport name as published on Skytrax.
+        data_tests: [not_null]
+
+  - name: stg_skytrax__airline_reviews
+    description: "Deduplicated raw airline reviews. Grain: one row per review_id."
+    data_tests:
+      # The scrape re-issues review_id on re-ingest, so this - not review_id -
+      # is what actually identifies a submission. Guards the dedup above.
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - customer_name
+              - nationality
+              - airline_id
+              - date_submitted
+              - review
+    columns:
+      - name: review_id
+        data_tests: [unique, not_null]
+      - name: airline_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_skytrax__airlines')
+                field: airline_id
+      - name: date_submitted
+        data_tests: [not_null]
+
+  - name: stg_skytrax__airport_reviews
+    description: "Deduplicated raw airport reviews. Grain: one row per review_id."
+    data_tests:
+      # The scrape re-issues review_id on re-ingest, so this - not review_id -
+      # is what actually identifies a submission. Guards the dedup above.
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - customer_name
+              - nationality
+              - airport_id
+              - date_submitted
+              - review
+    columns:
+      - name: review_id
+        data_tests: [unique, not_null]
+      - name: airport_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_skytrax__airports')
+                field: airport_id
+      - name: date_submitted
+        data_tests: [not_null]
+
+  - name: stg_skytrax__lounge_reviews
+    description: "Deduplicated raw lounge reviews. Grain: one row per review_id."
+    data_tests:
+      # The scrape re-issues review_id on re-ingest, so this - not review_id -
+      # is what actually identifies a submission. Guards the dedup above.
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - customer_name
+              - nationality
+              - airline_id
+              - lounge_name
+              - date_submitted
+              - review
+    columns:
+      - name: review_id
+        data_tests: [unique, not_null]
+      - name: airline_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_skytrax__airlines')
+                field: airline_id
+      - name: date_submitted
+        data_tests: [not_null]
+
+  - name: stg_skytrax__seat_reviews
+    description: "Deduplicated raw seat reviews. Grain: one row per review_id."
+    data_tests:
+      # The scrape re-issues review_id on re-ingest, so this - not review_id -
+      # is what actually identifies a submission. Guards the dedup above.
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - customer_name
+              - nationality
+              - airline_id
+              - date_submitted
+              - review
+    columns:
+      - name: review_id
+        data_tests: [unique, not_null]
+      - name: airline_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_skytrax__airlines')
+                field: airline_id
+      - name: date_submitted
+        data_tests: [not_null]

@@ -1,14 +1,8 @@
 # qdbd-dbt-demo
 
-A small dbt project on DuckDB, built so [qdbd](https://qdbd.dev/) has something real to draw: descriptions that live in dbt yml, a schema diff between git branches, and the same dev / ci / prod targets as [dbt_duckdb_cicd_template](https://github.com/MarkPhamm/dbt_duckdb_cicd_template). That repository is the course. This one is the diagram.
+A dbt project on DuckDB, built so [qdbd](https://qdbd.dev/) has something real to draw. The ERD in `erd/` is written by hand. Descriptions and column types come from the dbt yml, through one `# @dbt: ..` line, with no `manifest.json`. CI fails when the two disagree. Each environment (dev, qa, prod) publishes its own diagram, and qa and dev highlight what promoting them would change.
 
-```
-raw_customers ──> stg_customers ──────────────────────────> customers
-raw_orders ─────> stg_orders ─────────────────────────────> orders
-raw_payments ───> stg_payments ──> int_order_payments ────> orders
-```
-
-`planned_refunds` is on the hand-written diagram only. It is not a dbt model.
+The data is a sample of the Skytrax reviews from [skytrax_reviews_data](https://github.com/MarkPhamm/skytrax_reviews_data), modelled the same way: four star schemas on one shared set of dimensions. The CI/CD follows [dbt_duckdb_cicd_template](https://github.com/MarkPhamm/dbt_duckdb_cicd_template).
 
 ## Setup
 
@@ -17,98 +11,131 @@ Python 3.12 and [uv](https://docs.astral.sh/uv/). qdbd 0.6.0, the same pin as CI
 ```bash
 uv sync
 uv tool install "quickdbd-cli==0.6.0"
+uv run dbt deps
 uv run dbt build
+qdbd serve erd
 ```
 
 `profiles.yml` is committed because DuckDB has no credentials. dbt reads it from the project directory.
 
-## Two diagrams
+## Layout
 
-| Path | What it is |
+```
+data/raw/            Skytrax sample, read in place by a dbt source (read_csv)
+models/
+  staging/           stg_skytrax__*         one per raw file, re-ingested duplicates removed
+  intermediate/      int_*_reviews_cleaned  nulls to 'unknown', casts, normalised spellings
+  conformed/         dim_airline, dim_customer, dim_aircraft, dim_date
+  airline_reviews/   fct_airline_review, dim_location
+  airport_reviews/   fct_airport_review, dim_airport
+  lounge_reviews/    fct_lounge_review, dim_lounge
+  seat_reviews/      fct_seat_review, dim_seat_configuration
+erd/                 the diagram, one .txt per star schema
+scripts/sample_raw.py  rebuilds data/raw/ from a skytrax_reviews_data checkout
+```
+
+Each star schema is a folder straight under `models/`, so it is also a schema in prod (`conformed`, `lounge_reviews`, ...). [GLOSSARY.md](GLOSSARY.md) defines review, reviewer, rating band and the rest.
+
+## Data model
+
+Grain of every fact: one row per review submission. Row counts are for the committed sample.
+
+| Folder | Table | Rows | |
+|---|---|---:|---|
+| conformed | `dim_airline` | 595 | Airline lookup, shared by airline, lounge and seat reviews |
+| conformed | `dim_customer` | 1,533 | Reviewer proxy (name + nationality), with a review count per subject |
+| conformed | `dim_aircraft` | 44 | Model, manufacturer, seat capacity |
+| conformed | `dim_date` | 21,130 | Calendar and fiscal spine covering every date in every fact |
+| airline_reviews | `fct_airline_review` | 500 | 7 category ratings, origin / destination / transit location |
+| airline_reviews | `dim_location` | 334 | City + airport code, role-played three times by the fact |
+| airport_reviews | `fct_airport_review` | 500 | 8 category ratings |
+| airport_reviews | `dim_airport` | 1,004 | Airport lookup |
+| lounge_reviews | `fct_lounge_review` | 482 | 7 category ratings |
+| lounge_reviews | `dim_lounge` | 403 | Lounge, airport and access tier |
+| seat_reviews | `fct_seat_review` | 483 | 12 category ratings |
+| seat_reviews | `dim_seat_configuration` | 29 | Cabin, normalised layout, seats per row |
+
+`scripts/sample_raw.py` keeps the 480 most recent submissions per subject, plus up to 20 that the source stored twice, so the staging dedup still has something to remove. One seat-review test warns on purpose: three reviews in the source carry a 1970 submission date.
+
+Skytrax reviews are self-reported. Anything built on them is directional, not population-level.
+
+## The diagram
+
+`erd/` is five files, one per star schema. qdbd compiles the folder as one schema, so `fct_lounge_review` in `lounge_reviews.txt` can point at `dim_customer` in `conformed.txt`.
+
+The tables, columns and relationships are written by hand. Everything else comes from the yml, through `# @dbt: ..` at the top of `erd/conformed.txt`:
+
+| In the diagram | From |
 |---|---|
-| `schema/schema.txt` | Hand-written. `# @dbt: ..` fills descriptions, tags and column types from the yml and from `models/docs.md`. No `manifest.json`. |
-| `erd/generated/` | Written by `qdbd import dbt` after `dbt docs generate`. Columns and types come from the manifest and the catalog. Relationships are the `relationships` tests. |
+| Table description | the model's `description` |
+| Column description | the column's `description`; `average_rating` and `rating_band` come from `{% docs %}` blocks in `models/docs.md` |
+| Column type | the column's `data_type` |
+| Header colour | the name: `dim_` and `fct_` are tagged and coloured without any config |
 
-Pass one of those paths to qdbd. The repo root contains both, and qdbd would merge them into one namespace and report duplicate tables.
+`qdbd check --strict erd` fails when they drift: a column in the diagram that the yml does not list, a yml column missing from the diagram, a type that disagrees, or a table with no dbt model. `dim_route` in `erd/airline_reviews.txt` is planned and not built. `# @dbt: none` above it keeps the check quiet.
 
-`raw_`, `stg_` and `int_` take their header colour from the name. `customers` and `orders` are tagged `mart` in the yml, and `schema/schema.txt` sets that colour with `# @color mart`.
+```bash
+qdbd serve erd                     # then open fct_lounge_review
+qdbd check --strict erd
+qdbd build erd -o /tmp/erd.html
+qdbd build erd -s group:lounge_reviews -o /tmp/lounge.html
+qdbd path erd --from dim_customer --to fct_seat_review
+```
 
-`# @dbt: none` above `planned_refunds` tells qdbd the table is not in dbt, so `qdbd check` stays quiet about it.
+Positions live in `erd/qdbd.layout.json`. `qdbd layout --by-group erd` rewrites them with one region per file.
 
-## dbt targets
+## Environments
 
 One `database/database.duckdb`. The target chooses the schema.
 
-| Target | Schema |
-|---|---|
-| `dev` (default) | `dev`, everything flat |
-| `ci` | `ci_local`, or `ci_pr_<n>` when `DBT_CI_SCHEMA` is set |
-| `prod` | `raw`, `staging`, `intermediate`, `marts` |
+| Target | Used by | Schema |
+|---|---|---|
+| `dev` (default) | your laptop, CD on the `dev` branch | `dev`, everything flat |
+| `qa` | CD on the `qa` branch | `qa`, everything flat |
+| `ci` | pull requests | `ci_local`, or `ci_pr_<n>` when `DBT_CI_SCHEMA` is set |
+| `prod` | CD on `main` | `staging`, `intermediate`, `conformed`, and one per subject |
 
-`macros/generate_schema_name.sql` is what makes prod split and the other two stay flat. dbt's built-in macro would concatenate instead (`dev_staging`).
+`macros/generate_schema_name.sql` is what makes prod split and the others stay flat. dbt's built-in macro would concatenate instead (`dev_staging`).
 
-```bash
-uv run dbt build --target dev
-uv run dbt build --target ci
-uv run dbt build --target prod
-```
+## Branches and promotion
 
-The diagram does not change with the target. It describes the code, not the schema the rows land in.
+Changes move `feature → dev → qa → main`, one pull request per hop.
 
-## Git branches
-
-| Branch | Schema |
-|---|---|
-| `main` | Matches the yml. `qdbd check --strict schema` is clean. |
-| `qa` | Adds `orders.shipped_at` (SQL, yml and both diagrams) and a `relationships` test from `stg_payments.order_id` to `stg_orders.order_id`. Open as a pull request into `main`. |
-| `dev` | The `qa` change, plus `orders.internal_note` in `schema/schema.txt` only. `qdbd check schema` warns. This branch has no pull request, so CI does not run it. |
+| Branch | Ahead of the next one by | Pages |
+|---|---|---|
+| `main` | (production) | `/` |
+| `qa` | `dim_cabin`, a conformed dimension, with `cabin_id` on the airline and seat facts | `/qa/`, coloured against `main` |
+| `dev` | `dim_route` built as a model, with `route_id` on `fct_airline_review` | `/dev/`, coloured against `qa` |
 
 On `qa` or `dev`:
 
 ```bash
-qdbd diff --base main schema
-qdbd diff --base main erd/generated
-qdbd build schema --diff-base main -o /tmp/schema-diff.html
-qdbd build erd/generated --diff-base main -o /tmp/generated-diff.html
+qdbd diff --base main erd
+qdbd build erd --diff-base main -o /tmp/erd-diff.html
 ```
 
-Run the two diffs separately. One command with both paths would compile them together.
+## CI/CD
 
-## qdbd commands
+`cd.yml` runs on a push to `dev`, `qa` or `main`. It builds that branch's target (`main` builds `prod`) and uploads `manifest.json` and `database.duckdb` as `dbt-artifacts`.
+
+`ci.yml` runs on a pull request into any of the three:
+
+- `slim-ci` downloads the artifact from the base branch's last green `cd.yml` and runs `dbt build --target ci --select state:modified+ --defer`. A pull request into `qa` is compared with `qa`, not with prod. Each branch needs one green `cd.yml` run before pull requests into it can download anything.
+- `erd` runs `qdbd check --strict erd` and posts one comment with what the pull request changes in the diagram. It needs no dbt, no build and no manifest.
+
+`pages.yml` runs after each successful `cd.yml`. It checks out all three branches, builds `erd/` on each one (`qa` with `--diff-base main`, `dev` with `--diff-base qa`), and deploys the result to GitHub Pages. Set **Settings → Pages → Source** to **GitHub Actions** once.
+
+## Refreshing the sample
 
 ```bash
-qdbd check schema
-qdbd check --strict schema
-qdbd serve schema
-qdbd build schema -o /tmp/schema.html
-qdbd build erd/generated -o /tmp/generated.html
-qdbd path schema --from raw_customers --to orders
-qdbd build erd/generated -s group:marts -o /tmp/marts.html
+uv run python scripts/sample_raw.py ../skytrax_reviews_data/data/raw
 ```
-
-`qdbd serve schema` and then open `orders`. The description on the table comes from `models/marts/schema.yml`. The description on `payment_method` comes from the `{% docs payment_method %}` block in `models/docs.md`.
-
-Regenerate the import after a model change, then commit `erd/generated/`:
-
-```bash
-./scripts/build-erd.sh
-```
-
-Positions live in `schema/qdbd.layout.json` and `erd/generated/qdbd.layout.json`. `qdbd layout schema` and `qdbd layout erd/generated` rewrite them.
-
-## CI
-
-`cd.yml` runs on a push to `main`: `dbt build --target prod`, then uploads `manifest.json`, `catalog.json` and `database.duckdb`.
-
-`ci.yml` runs on a pull request:
-
-- `slim-ci` downloads that artifact and runs `dbt build --target ci --select state:modified+ --defer`. The first pull request needs a green `cd.yml` on `main` before this job can download anything.
-- `erd` builds the project, fails if `erd/generated/` is stale, and posts one comment with the schema diff. The diagram artifact is named `erd`.
 
 ## Elsewhere in qdbd
 
 This repo does not set these up. The docs do:
 
+- [Importing a dbt manifest](https://qdbd.dev/dbt/) instead of linking the yml
 - [MCP](https://qdbd.dev/mcp/) for agents
 - [Sharing a gist](https://qdbd.dev/sharing/)
 - [DBML](https://qdbd.dev/dbml/)

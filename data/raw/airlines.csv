@@ -1,0 +1,596 @@
+airline_id,airline_name
+1,AB Aviation
+2,AIRDO
+3,AJet
+4,ANA All Nippon Airways
+5,ASKY Airlines
+6,ATA Airlines
+7,Adria Airways
+8,Aegean Airlines
+9,Aer Lingus
+10,Aero VIP
+11,AeroItalia
+12,Aerocaribbean
+13,Aeroflot Russian Airlines
+14,Aerolineas Argentinas
+15,Aerolineas Estelar
+16,Aeromar
+17,Aeromexico
+18,Aerosur
+19,Africa World Airlines
+20,Afriqiyah Airways
+21,Aigle Azur
+22,Air Algerie
+23,Air Antilles
+24,Air Arabia
+25,Air Astana
+26,Air Austral
+27,Air Bagan
+28,Air Belgium
+29,Air Berlin
+30,Air Botswana
+31,Air Burkina
+32,Air Busan
+33,Air Cairo
+34,Air Cambodia
+35,Air Canada
+36,Air Canada rouge
+37,Air Caraibes
+38,Air China
+39,Air Corsica
+40,Air Costa
+41,Air Cote d'Ivoire
+42,Air Djibouti
+43,Air Dolomiti
+44,Air Europa
+45,Air France
+46,Air Greenland
+47,Air Iceland Connect
+48,Air India
+49,Air India Express
+50,Air Italy
+51,Air Juan
+52,Air KBZ
+53,Air Koryo
+54,Air Labrador
+55,Air Macau
+56,Air Madagascar
+57,Air Malawi
+58,Air Malta
+59,Air Mauritius
+60,Air Mediterranee
+61,Air Memphis
+62,Air Moldova
+63,Air Montenegro
+64,Air Namibia
+65,Air New Zealand
+66,Air Niugini
+67,Air North Yukon's Airline
+68,Air Nostrum
+69,Air Panama
+70,Air Pegasus
+71,Air Premia
+72,Air Rarotonga
+73,Air Senegal
+74,Air Serbia
+75,Air Seychelles
+76,Air Tahiti Nui
+77,Air Tanzania
+78,Air Transat
+79,Air Vanuatu
+80,Air Zimbabwe
+81,AirAsia
+82,AirAsia India
+83,AirAsia Philippines
+84,AirAsia X
+85,AirAsia Zest
+86,AirConnect
+87,AirSWIFT
+88,Aircalin
+89,Airlink
+90,Airnorth
+91,Akasa Air
+92,Alaska Airlines
+93,Alitalia
+94,Allegiant Air
+95,Alliance Air
+96,Alliance Airlines
+97,Amaszonas
+98,American Airlines
+99,American Eagle
+100,American Express Centurion
+101,Andes Líneas Aéreas
+102,Arajet
+103,Ariana Afghan Airlines
+104,Arik Air
+105,Arkefly
+106,Arkia Israeli Airlines
+107,Armenia Air Company
+108,Armenian Airlines
+109,Asiana Airlines
+110,Aspire by Swissport
+111,Atlantic Airways
+112,Atlasglobal
+113,Auric Air
+114,Aurigny Air
+115,Austrian Airlines
+116,Avelo Airlines
+117,Avianca
+118,Avianca Brazil
+119,Avianca Ecuador
+120,Aviator Lounge CPH
+121,Avior Airlines
+122,Azerbaijan Airlines
+123,Azul Airlines
+124,Azur Air Germany
+125,BA CityFlyer
+126,BH Air
+127,Badr Airlines
+128,Bahamasair
+129,Bamboo Airways
+130,Bangkok Airways
+131,Bassaka Air
+132,Batik Air
+133,Beijing Capital Airlines
+134,Belavia
+135,Berjaya Air
+136,BermudAir
+137,Bhutan Airlines
+138,Biman Bangladesh Airlines
+139,Binter Canarias
+140,Blu-express
+141,Blue Air
+142,Blue Islands
+143,Blue Panorama Airlines
+144,Blue1
+145,Bluebird Airways
+146,Boliviana de Aviacion
+147,BoraJet
+148,Boutique Air
+149,Braathens
+150,Breeze Airways
+151,British Airways
+152,Brussels Airlines
+153,Buddha Air
+154,Bulgaria Air
+155,Buraq Air
+156,Buta Airways
+157,CSA Czech Airlines
+158,Camair-Co
+159,Cambodia Airways
+160,Cambodia Angkor Air
+161,Cambodia Bayon Airlines
+162,Canadian North
+163,Canaryfly
+164,Cape Air
+165,Caribbean Airlines
+166,Carpatair
+167,Cathay Dragon
+168,Cathay Pacific Airways
+169,Cayman Airways
+170,Cebu Pacific
+171,CemAir
+172,Central Mountain Air
+173,China Airlines
+174,China Eastern Airlines
+175,China Southern Airlines
+176,China United Airlines
+177,Citilink
+178,CityJet
+179,Coastal Aviation
+180,Cobalt
+181,Comair
+182,Condor Airlines
+183,Contour Airlines
+184,Conviasa
+185,Copa Airlines
+186,Corendon Airlines
+187,Corsair
+188,Costa Rica Green Airways
+189,Croatia Airlines
+190,Cubana Airlines
+191,Cyprus Airways
+192,DNATA
+193,Danish Air Transport
+194,Darwin Airline
+195,Delta Air Lines
+196,Dimonim Air
+197,Discover Airlines
+198,Dniproavia
+199,Dragonair
+200,Druk Air
+201,Dynamic International Airways
+202,EVA Air
+203,EWA Air
+204,Eastar Jet
+205,Eastern Airlines
+206,Eastern Airways
+207,Easyfly
+208,Edelweiss Air
+209,Egyptair
+210,El Al Israel Airlines
+211,Ellinair
+212,Emirates
+213,Eritrean Airlines
+214,Ernest Airlines
+215,Escape Lounges
+216,Estonian Air
+217,Eswatini Air
+218,Ethiopian Airlines
+219,Etihad Airways
+220,Europe Airpost
+221,Eurowings
+222,Evelop Airlines
+223,FLYONE
+224,FMI Air
+225,Far Eastern Air Transport
+226,Felix Airways
+227,Fiji Airways
+228,Finnair
+229,Firefly
+230,FitsAir
+231,Flair Airlines
+232,Fly540.com
+233,FlyArystan
+234,FlyGabon
+235,FlySafair
+236,Flynas
+237,Freebird Airlines
+238,French Bee
+239,Frontier Airlines
+240,Fuji Dream Airlines
+241,Garuda Indonesia
+242,Georgian Airways
+243,Germania Airline
+244,Germanwings
+245,Go First
+246,GoAir
+247,Gol Transportes Aéreos
+248,Golden Myanmar Airlines
+249,Grand Cru Airlines
+250,Greater Bay Airlines
+251,Gulf Air
+252,HK Express
+253,HOP!
+254,Hainan Airlines
+255,Hawaiian Airlines
+256,Helvetic Airways
+257,Henan Airlines
+258,Hi Fly
+259,HiSky
+260,Himalaya Airlines
+261,Hong Kong Airlines
+262,Horizon Air
+263,Hunnu Air
+264,ITA Airways
+265,Iberia
+266,Iberia Express
+267,Iberojet
+268,Icelandair
+269,IndiGo
+270,Insel Air
+271,InterSky
+272,Intercaribbean Airways
+273,Interjet
+274,Iran Air
+275,Iran Aseman Airlines
+276,Iraqi Airways
+277,Island Air
+278,Israir Airlines
+279,JC International Airlines
+280,Jambojet
+281,Japan Airlines
+282,Jazeera Airways
+283,Jazz
+284,Jeju Air
+285,Jet Airways
+286,Jet2.com
+287,JetSmart
+288,Jetairfly
+289,Jetblue Airways
+290,Jetstar Airways
+291,Jetstar Asia
+292,Jetstar Japan
+293,Jetstar Pacific
+294,JetsuiteX
+295,Jin Air
+296,Joon
+297,Jordan Aviation
+298,Juneyao Air
+299,KD Air
+300,KLM Royal Dutch Airlines
+301,KM Malta Airlines
+302,Kam Air
+303,Kan Air
+304,Karthago Airlines
+305,Kenya Airways
+306,Kish Airlines
+307,Korean Air
+308,Kulula
+309,Kuwait Airways
+310,LAM Mozambique
+311,LAN Airlines
+312,LAN Colombia
+313,LAN Peru
+314,LATAM Airlines
+315,LC Perú
+316,LIAT
+317,LOT Polish Airlines
+318,La Compagnie
+319,Lao Airlines
+320,Lao Skyway
+321,Laudamotion
+322,Le Saigonnais Lounge
+323,Le Salon Phnom Penh
+324,Level
+325,Libyan Airlines
+326,Lion Air
+327,Loch Lomond Seaplanes
+328,Loganair
+329,Lubeck Air
+330,Lucky Air
+331,Lufthansa
+332,Luxair
+333,Lynx Air
+334,MAYAir
+335,MEGA Maldives Airlines
+336,MIAT Mongolian Airlines
+337,Mack Air
+338,Madagasikara Airways
+339,Mahan Air
+340,Malawian Airlines
+341,Malaysia Airlines
+342,Maldivian
+343,Malindo Air
+344,Malmo Aviation
+345,Mandarin Airlines
+346,Mango Airlines
+347,Mann Yadanarpon Airlines
+348,Manta Air
+349,Martinair
+350,Mauritania Airlines
+351,Maya Island Air
+352,Meridiana
+353,Middle East Airlines
+354,Mihin Lanka
+355,Mokulele Airlines
+356,Moldavian Airlines
+357,Monarch Airlines
+358,Montenegro Airlines
+359,Motor Sich Airlines
+360,Myanmar Airways
+361,Myanmar National Airlines
+362,NAM Air
+363,NIKI
+364,Nature Air
+365,Nauru Airlines
+366,Neos Air
+367,Nepal Airlines
+368,New Pacific Airlines
+369,NextJet
+370,Nile Air
+371,No.1 Traveller
+372,Nok Air
+373,NokScoot
+374,NordStar
+375,Nordavia
+376,Nordic Regional Airlines
+377,Nordica
+378,Nordwind Airlines
+379,Norse Atlantic Airways
+380,Norwegian
+381,Nouvelair
+382,Novair
+383,Novoair
+384,Okay Airways
+385,Olympic Air
+386,Oman Air
+387,Omni Air International
+388,Onur Air
+389,Openskies
+390,Orient Thai Airlines
+391,PAL Express
+392,PAWA Dominicana
+393,PLAY
+394,Pacific Airlines
+395,Pakistan Intl Airlines
+396,Pan Pacific Airlines
+397,Passaredo
+398,Passion Air
+399,Peach Aviation
+400,Pegasus Airlines
+401,Pelita Air
+402,PenAir
+403,Peruvian Airlines
+404,Petroleum Air Services
+405,Philippine Airlines
+406,Phuket Air
+407,Plaza Premium
+408,Pobeda Airlines
+409,Porter Airlines
+410,Precision Air
+411,Primera Air
+412,Priority Pass
+413,Privilege Style
+414,Qantas Airways
+415,QantasLink
+416,Qatar Airways
+417,Qazaq Air
+418,Ravn Alaska
+419,Read more
+420,Red Wings Airlines
+421,Regent Airways
+422,Regional Express
+423,Rex Airlines
+424,Rhein-Neckar Air
+425,Rossiya Airlines
+426,Royal Air Maroc
+427,Royal Brunei Airlines
+428,Royal Jordanian Airlines
+429,Rwandair
+430,Ryanair
+431,S7 Siberia Airlines
+432,SA Express
+433,SAS Scandinavian
+434,SATA Air Azores
+435,SATA International
+436,SATENA
+437,SATS Premier
+438,SCAT Airlines
+439,STARLUX Airlines
+440,SVG Air
+441,Safarilink
+442,Safi Airways
+443,Salam Air
+444,Salon Icare
+445,Sansa Airlines
+446,Santa Barbara Airlines
+447,Saudi Arabian Airlines
+448,Scoot
+449,Seaborne Airlines
+450,SereneAir
+451,Shaheen Air
+452,Shandong Airlines
+453,Shanghai Airlines
+454,Shenzhen Airlines
+455,Sichuan Airlines
+456,SilkAir
+457,Silver Airways
+458,Singapore Airlines
+459,Sky Airline
+460,Sky Express Airlines
+461,SkyTeam
+462,SkyUp Airlines
+463,SkyWest Airlines
+464,SkyWork Airlines
+465,Skybus
+466,Skymark Airlines
+467,Skytrans Airlines
+468,Small Planet Airlines
+469,SmartLynx Airlines
+470,SmartWings
+471,Smartavia
+472,Sol Líneas Aéreas
+473,Solomon Airlines
+474,Somon Air
+475,South African Airways
+476,Southern Airways Express
+477,Southwest Airlines
+478,Southwind Airlines
+479,SpiceJet
+480,Spirit Airlines
+481,Spring Airlines
+482,SriLankan Airlines
+483,Sriwijaya Air
+484,Star Alliance
+485,Star Peru
+486,StarFlyer
+487,Sudan Airways
+488,Sun Country Airlines
+489,Sun-Air
+490,SunExpress
+491,Sunlight Air
+492,Sunwing Airlines
+493,Suparna Airlines
+494,Super Air Jet
+495,Surinam Airways
+496,Swiss Intl Air Lines
+497,Swoop
+498,SyrianAir
+499,T'Way Air
+500,TAAG Angola Airlines
+501,TACA Airlines
+502,TACA Regional
+503,TACV Cabo Verde Airlines
+504,TAG Airlines
+505,TAM Airlines
+506,TAME
+507,TAP Portugal
+508,TAR Aerolineas
+509,TAROM Romanian
+510,TUI Airways
+511,TUIfly
+512,TUIfly Nordic
+513,TUS Airways
+514,Tailwind Airlines
+515,Tajik Air
+516,Tame Línea Aérea Del Ecuador
+517,Tara Air
+518,Thai AirAsia
+519,Thai Airways
+520,Thai Lion Air
+521,Thai Smile Airways
+522,Thomas Cook Airlines
+523,Thomas Cook Airlines Belgium
+524,Thomas Cook Airlines Scandinavia
+525,Thomson Airways
+526,Tianjin Airlines
+527,Tibet Airlines
+528,Tigerair
+529,Tigerair Australia
+530,Tigerair Taiwan
+531,Titan Airways
+532,TransAsia Airways
+533,TransNusa
+534,Transaero Airlines
+535,Transavia
+536,Trigana Air
+537,Tropic Air Belize
+538,Tunisair
+539,Turkish Airlines
+540,Turkmenistan Airlines
+541,UP by El Al
+542,US Airways
+543,US-Bangla Airlines
+544,Uganda Airlines
+545,Ukraine International
+546,Ultra Air
+547,United Airlines
+548,Ural Airlines
+549,Utair Aviation
+550,Uzbekistan Airways
+551,V Air
+552,VLM Airlines
+553,Vanilla Air
+554,ViaAir
+555,VietJet Air
+556,Vietnam Airlines
+557,Virgin America
+558,Virgin Atlantic
+559,Virgin Australia
+560,Vistara
+561,Viva Air
+562,VivaAerobús
+563,VivaColombia
+564,Volaris
+565,Volotea
+566,Voyage Air
+567,Vueling Airlines
+568,WOW air
+569,Wamos Air
+570,WestJet Airlines
+571,Wideroe
+572,Winair
+573,Wingo
+574,Wings Air
+575,Wizz Air
+576,World2Fly
+577,XL Airways France
+578,Xiamen Airlines
+579,Yakutia Airlines
+580,Yangon Airways
+581,Yemenia
+582,Yeti Airlines
+583,ZIPAIR
+584,Zambia Airways
+585,airBaltic
+586,airblue
+587,bmi Regional
+588,easyJet
+589,euroAtlantic Airways
+590,fastjet
+591,flyadeal
+592,flybe
+593,flybondi
+594,flydubai
+595,İGA Lounge

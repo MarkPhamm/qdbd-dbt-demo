@@ -1,6 +1,10 @@
 # CD — continuous deployment.
-# Merge to main (or press Run workflow) -> build everything ->
-# save the two files tomorrow's pull request needs.
+# Push to dev, qa or main (or press Run workflow) -> build that environment ->
+# save the files the next pull request into that branch needs.
+#
+#   dev  -> --target dev    one flat `dev` schema
+#   qa   -> --target qa     one flat `qa` schema, staging for main
+#   main -> --target prod   split schemas (staging, conformed, lounge_reviews, ...)
 #
 # This file must not run on a pull request. That is ci.yml.
 
@@ -8,11 +12,12 @@ name: cd
 
 on:
   push:
-    branches: [main]
+    branches: [main, qa, dev]
   workflow_dispatch:
 
+# One queue per branch: a push to dev never waits for, or cancels, a qa deploy.
 concurrency:
-  group: cd
+  group: cd-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -20,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DBT_PROFILES_DIR: .
+      # main is production; dev and qa are targets of the same name.
+      DBT_TARGET: ${{ github.ref_name == 'main' && 'prod' || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
 
@@ -29,28 +36,27 @@ jobs:
           python-version: "3.12"
 
       - name: Install the locked dbt
-        run: uv sync --frozen
+        run: |
+          uv sync --frozen
+          uv run dbt deps
 
-      - name: Build production
-        run: uv run dbt build --target prod
+      - name: Build ${{ env.DBT_TARGET }}
+        run: uv run dbt build --target "$DBT_TARGET"
 
-      # Production's third output. manifest.json describes the project as
-      # written; catalog.json describes the warehouse as built — every column
-      # and its real type, read back out of information_schema.
-      - name: Describe what production built
-        run: uv run dbt docs generate --target prod
-
+      # What slim CI needs: manifest.json to tell what a pull request modified,
+      # and the database to --defer everything else to.
       - name: Stage artifacts
         run: |
-          mkdir -p prod_dbt_artifacts
-          cp target/manifest.json prod_dbt_artifacts/manifest.json
-          cp target/catalog.json prod_dbt_artifacts/catalog.json
-          cp database/database.duckdb prod_dbt_artifacts/database.duckdb
+          mkdir -p dbt_artifacts
+          cp target/manifest.json dbt_artifacts/manifest.json
+          cp database/database.duckdb dbt_artifacts/database.duckdb
 
+      # Same name on every branch. ci.yml picks the right one by asking for the
+      # latest successful run on the pull request's base branch.
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: prod-dbt-artifacts
-          path: prod_dbt_artifacts/
+          name: dbt-artifacts
+          path: dbt_artifacts/
           if-no-files-found: error
           retention-days: 30

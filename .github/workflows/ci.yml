@@ -1,14 +1,16 @@
 # CI.
-# A pull request opens two independent questions:
-#   slim-ci  — are the numbers still right? Build only what changed, defer the rest to prod.
-#   erd      — did a table or column appear, vanish or get renamed?
+# A pull request into dev, qa or main opens two independent questions:
+#   slim-ci  — are the numbers still right? Build only what changed, defer the
+#              rest to the environment the pull request merges into.
+#   erd      — does the diagram still match the yml, and what did it change?
 #
-# This file must not write to production. That is cd.yml.
+# This file must not write to any environment. That is cd.yml.
 
 name: ci
 
 on:
   pull_request:
+    branches: [main, qa, dev]
 
 concurrency:
   group: ci-${{ github.event.pull_request.number }}
@@ -33,81 +35,54 @@ jobs:
           python-version: "3.12"
 
       - name: Install the locked dbt
-        run: uv sync --frozen
+        run: |
+          uv sync --frozen
+          uv run dbt deps
 
-      - name: Download the latest CD artifacts
+      # A pull request into qa is compared with qa, not with prod: the base
+      # branch's last green cd.yml run is the state it merges into.
+      - name: Download the base branch's CD artifacts
         env:
           GH_TOKEN: ${{ github.token }}
+          BASE: ${{ github.base_ref }}
         run: |
-          mkdir -p prod_dbt_artifacts database
+          mkdir -p base_dbt_artifacts database
           RUN_ID=$(gh run list \
             --workflow=cd.yml \
-            --branch=main \
+            --branch="$BASE" \
             --status=success \
             --limit=1 \
             --json databaseId \
             --jq '.[0].databaseId')
           if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
-            echo "No successful cd.yml run on main yet."
-            echo "Merge to main once (or Run workflow) so CD can upload artifacts."
+            echo "No successful cd.yml run on $BASE yet."
+            echo "Push to $BASE once (or Run workflow on it) so CD can upload artifacts."
             exit 1
           fi
-          gh run download "$RUN_ID" --name prod-dbt-artifacts --dir prod_dbt_artifacts
-          cp prod_dbt_artifacts/database.duckdb database/database.duckdb
+          gh run download "$RUN_ID" --name dbt-artifacts --dir base_dbt_artifacts
+          cp base_dbt_artifacts/database.duckdb database/database.duckdb
 
       - name: Slim CI
         run: >
           uv run dbt build --target ci
           --select state:modified+
-          --defer --state prod_dbt_artifacts/
+          --defer --state base_dbt_artifacts/
 
-  # Shares nothing with slim-ci: no prod artifact, no --defer, no state.
-  # It builds the whole project from the seeds into its own schema, so it
-  # stays green on a repository that has never run CD.
+  # Shares nothing with slim-ci, and needs no dbt at all: qdbd reads the
+  # model yml through `# @dbt: ..` in erd/conformed.txt. --strict fails the
+  # pull request when the diagram and the yml disagree (a column on one side
+  # only, a type mismatch, a table with no model). The comment shows what
+  # the pull request changes in the diagram, against its base branch.
   erd:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write # the second action posts one comment
-    env:
-      DBT_PROFILES_DIR: .
-      DBT_CI_SCHEMA: ci_pr_${{ github.event.pull_request.number }}
+      pull-requests: write # the action posts one comment
     steps:
       - uses: actions/checkout@v4
 
-      - uses: astral-sh/setup-uv@v6
-        with:
-          enable-cache: true
-          python-version: "3.12"
-
-      - name: Install the locked dbt
-        run: uv sync --frozen
-
-      # catalog.json is what knows the column types, and dbt can only write it
-      # for relations that exist.
-      - name: Build, then describe what got built
-        run: |
-          uv run dbt build --target ci
-          uv run dbt docs generate --target ci
-
-      # Fail if erd/generated/ does not match the project. comment is off:
-      # both qdbd steps would otherwise fight over the same comment marker.
       - uses: MarkPhamm/quickdbd-cli@v0.6.0
         with:
-          dbt-manifest: target/manifest.json
-          path: erd/generated
-          dbt-check: "true"
-          comment: "false"
-          upload-artifact: "false"
-          output: target/generated.html
-          qdbd-version: "0.6.0"
-
-      # Hand-written schema (yml via # @dbt:) and the generated import, each
-      # as its own diagram. On a pull request the build uses --diff-base and
-      # one comment has a section per path.
-      - uses: MarkPhamm/quickdbd-cli@v0.6.0
-        with:
-          path: schema erd/generated
-          site: site/
+          path: erd
           strict: "true"
           qdbd-version: "0.6.0"

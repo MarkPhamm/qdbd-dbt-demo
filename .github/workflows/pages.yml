@@ -1,0 +1,69 @@
+# Pages — one diagram site per environment.
+#
+#   /       main, as it is
+#   /qa/    qa,  coloured by what promoting it to main would change
+#   /dev/   dev, coloured by what promoting it to qa would change
+#
+# Every deploy rebuilds all three from the committed erd/ on each branch. qdbd
+# reads the model yml next to it, so no dbt is needed here, and one push never
+# wipes the other two folders.
+#
+# It runs after cd.yml rather than on push. A workflow_run job runs on the
+# default branch, and the github-pages environment only accepts deploys from
+# the default branch unless you widen its rules.
+
+name: pages
+
+on:
+  workflow_run:
+    workflows: [cd]
+    types: [completed]
+    branches: [main, qa, dev]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # --diff-base reads the other branches
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Build one site per environment
+        run: |
+          qdbd() { uvx --from "quickdbd-cli==0.6.0" qdbd "$@"; }
+          for env in main qa dev; do
+            git worktree add --detach "envs/$env" "origin/$env"
+          done
+          (cd envs/main && qdbd build erd -o "$GITHUB_WORKSPACE/site/index.html")
+          (cd envs/qa && qdbd build erd -o "$GITHUB_WORKSPACE/site/qa/index.html" --diff-base origin/main)
+          (cd envs/dev && qdbd build erd -o "$GITHUB_WORKSPACE/site/dev/index.html" --diff-base origin/qa)
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

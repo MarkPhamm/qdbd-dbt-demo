@@ -8,20 +8,22 @@
 
     Our rule:
 
-        target    +schema        -> schema written
-        --------  -------------  -------------------
-        prod      staging        -> staging
-        prod      intermediate   -> intermediate
-        prod      marts          -> marts
-        dev       (any)          -> dev
-        ci        (any)          -> ci_pr_42
+        target    +schema          -> schema written
+        --------  ---------------  -------------------
+        prod      staging          -> staging
+        prod      intermediate     -> intermediate
+        prod      conformed        -> conformed
+        prod      lounge_reviews   -> lounge_reviews   (and the other subjects)
+        qa        (any)            -> qa
+        dev       (any)            -> dev
+        ci        (any)            -> ci_pr_42
 
     Production splits into layers because it has many consumers -- analysts and
-    BI tools need `marts.customers` to be a stable address, and want no chance
+    BI tools need `conformed.dim_customer` to be a stable address, and want no chance
     of querying a staging view by accident.
 
-    Dev and CI each have exactly one consumer (you, or one pull request), so
-    splitting six models across three schemas buys nothing -- and makes
+    Dev, QA and CI each have exactly one consumer (you, a reviewer, or one pull
+    request), so splitting 26 models across seven schemas buys nothing -- and makes
     teardown three statements instead of one. `drop schema ci_pr_42 cascade`
     should clean up everything a pull request created.
 

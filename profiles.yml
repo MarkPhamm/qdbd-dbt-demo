@@ -9,18 +9,27 @@
 # Each entry under `outputs:` is a target, and a target is what "an
 # environment" means here: where to write, and under what name.
 #
-# All three targets point at the same database file. They are separated only
+# All four targets point at the same database file. They are separated only
 # by schema, which is how a warehouse does it too.
 # ---------------------------------------------------------------------------
 qdbd_dbt_demo:
   target: dev # used when you don't pass --target
   outputs:
 
-    # Laptop. One consumer, so every model lands in one flat `dev` schema.
+    # Laptop, and CD on the dev branch. One consumer, so every model lands in
+    # one flat `dev` schema.
     dev:
       type: duckdb
       path: database/database.duckdb
       schema: dev
+      threads: 4
+
+    # Staging. CD builds this on every push to the qa branch, so reviewers see
+    # what main would become before it is promoted. One flat `qa` schema.
+    qa:
+      type: duckdb
+      path: database/database.duckdb
+      schema: qa
       threads: 4
 
     # Pull requests. GitHub Actions sets DBT_CI_SCHEMA=ci_pr_42, so two open
@@ -34,7 +43,8 @@ qdbd_dbt_demo:
       threads: 4
 
     # Production. `schema:` here is only a fallback. macros/generate_schema_name.sql
-    # sends real models to `staging`, `intermediate` and `marts`.
+    # sends real models to `staging`, `intermediate`, `conformed` and one schema
+    # per review subject (`airline_reviews`, `lounge_reviews`, ...).
     #
     # On a warehouse this target would also carry different credentials, so CI
     # could not write to prod. This DuckDB file has no such split.

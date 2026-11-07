@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: int_airline_reviews_cleaned
+    description: >
+      Cleaned airline reviews - nulls on dimension-bearing attributes coalesced
+      to 'unknown', ratings cast to integer, columns renamed to model names.
+      Grain: one row per review_id.
+    columns:
+      - name: review_id
+        data_tests: [unique, not_null]
+      - name: customer_name
+        data_tests: [not_null]
+      - name: nationality
+        data_tests: [not_null]
+      - name: aircraft_model
+        data_tests: [not_null]
+
+  - name: int_airport_reviews_cleaned
+    description: "Cleaned airport reviews. Grain: one row per review_id."
+    columns:
+      - name: review_id
+        data_tests: [unique, not_null]
+      - name: customer_name
+        data_tests: [not_null]
+      - name: nationality
+        data_tests: [not_null]
+
+  - name: int_lounge_reviews_cleaned
+    description: "Cleaned lounge reviews. Grain: one row per review_id."
+    columns:
+      - name: review_id
+        data_tests: [unique, not_null]
+      - name: lounge_name
+        data_tests: [not_null]
+      - name: type_of_lounge
+        data_tests: [not_null]
+
+  - name: int_seat_reviews_cleaned
+    description: "Cleaned seat reviews. Grain: one row per review_id."
+    columns:
+      - name: review_id
+        data_tests: [unique, not_null]
+      - name: seat_type
+        data_tests: [not_null]
+      - name: seat_layout
+        data_tests: [not_null]

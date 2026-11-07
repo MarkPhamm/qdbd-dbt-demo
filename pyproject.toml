@@ -9,7 +9,7 @@
 [project]
 name = "qdbd-dbt-demo"
 version = "0.1.0"
-description = "A dbt + DuckDB project that shows qdbd: yml descriptions, git diff, and dev/ci/prod targets"
+description = "A dbt + DuckDB star schema of Skytrax reviews that shows qdbd: an ERD linked to the dbt yml, diffed across dev, qa and prod"
 requires-python = "==3.12.*"
 dependencies = [
     "dbt-core==1.12.5",

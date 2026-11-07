@@ -1,0 +1,1005 @@
+airport_id,airport_name
+1,ANR Robinson International
+2,Aalborg
+3,Aarhus
+4,Abbotsford Intl
+5,Aberdeen
+6,Abidjan
+7,Abu Dhabi
+8,Abuja
+9,Acapulco
+10,Accra Kotoka
+11,Adana
+12,Addis Ababa
+13,Adelaide
+14,Agadir
+15,Agadir Al Massira
+16,Aguadilla
+17,Aguascalientes
+18,Ahmedabad
+19,Ajaccio
+20,Akita
+21,Akron–Canton
+22,Al Ain
+23,Al Ula
+24,Albany
+25,Albuquerque
+26,Albury
+27,Alderney
+28,Alexandria Intl
+29,Alghero Fertilia
+30,Algiers
+31,Alicante
+32,Alice Springs
+33,Almaty
+34,Almeria
+35,Alor Setar
+36,Altenburg
+37,Amarillo
+38,Amman Queen Alia
+39,Amritsar
+40,Amsterdam Schiphol
+41,Anchorage
+42,Ancona
+43,Ankara
+44,Antalya
+45,Antananarivo
+46,Antigua Vc Bird
+47,Antwerp Deurne
+48,Arkhangelsk
+49,Aruba Reina Beatrix
+50,Ashgabat
+51,Aspen Pitkin County
+52,Astana
+53,Asturias
+54,Asuncion Silvio Pettirossi
+55,Athens
+56,Atlanta Hartsfield
+57,Auckland
+58,Austin
+59,Avignon
+60,Ayers Rock
+61,Bacau
+62,Bacolod–Silay
+63,Bagdogra
+64,Baghdad
+65,Bahrain
+66,Baku
+67,Ballina Byron
+68,Baltimore Washington
+69,Bandar Seri Begawan
+70,Bandung
+71,Baneasa
+72,Bangalore
+73,Bangkok Don Muang
+74,Bangkok Suvarnabhumi
+75,Bangor
+76,Banjarmasin
+77,Banjul
+78,Barbados Grantley Adams
+79,Barcelona
+80,Bari Palese
+81,Barnaul
+82,Barra Eoligarry
+83,Basel Mulhouse
+84,Batumi
+85,Bay Of Islands (kerikeri)
+86,Beauvais
+87,Beijing Capital
+88,Beijing Daxing
+89,Beirut
+90,Belem
+91,Belfast
+92,Belfast City
+93,Belgrade
+94,Belize
+95,Bellingham
+96,Belo Horizonte Confins
+97,Benghazi
+98,Bengkulu
+99,Bergen
+100,Bergerac
+101,Berlin Brandenburg
+102,Berlin Schonefeld
+103,Berlin Tegel
+104,Berlin Tempelhof
+105,Bermuda
+106,Berne
+107,Bharatpur
+108,Bhopal
+109,Bhubaneswar
+110,Biarritz
+111,Bilbao
+112,Billund
+113,Biratnagar
+114,Birmingham
+115,Birmingham-Shuttlesworth
+116,Birsa Munda
+117,Bishkek
+118,Bismarck
+119,Bissau
+120,Blackpool
+121,Blantyre
+122,Bloemfontein
+123,Bloomington
+124,Boa Vista
+125,Bocas Del Toro
+126,Bodrum
+127,Bogota
+128,Bohol-Panglao
+129,Boise
+130,Bologna Marconi
+131,Bonriki International
+132,Bordeaux
+133,Borg El Arab
+134,Boston Logan
+135,Bourgas
+136,Bournemouth
+137,Bozeman Yellowstone
+138,Bradley
+139,Braganca
+140,Brasilia
+141,Bratislava
+142,Bremen
+143,Brescia
+144,Brindisi
+145,Brisbane
+146,Bristol
+147,Brno
+148,Broken Hill
+149,Broome
+150,Brussels Charleroi
+151,Brussels Zaventem
+152,Bucharest Otopeni
+153,Budapest Ferihegy
+154,Buenos Aires
+155,Buenos Aires Aeroparque
+156,Buffalo
+157,Bujumbura
+158,Burbank Glendale Pasadena
+159,Burgas
+160,Burlington
+161,Burnie Wynyard
+162,Bydgoszcz
+163,Cagliari
+164,Cairns
+165,Cairo
+166,Calama El Loa
+167,Calcutta
+168,Calgary
+169,Calicut Intl
+170,Cam Ranh International
+171,Camiguin
+172,Canberra
+173,Cancun
+174,Cape Town
+175,Caracas
+176,Carcassonne
+177,Cardiff
+178,Cartagena Rafael Nunez
+179,Casablanca
+180,Cascais
+181,Catania
+182,Caticlan Boracay
+183,Cayenne
+184,Cebu
+185,Centrair Nagoya
+186,Central Nebraska Regional
+187,Chambery
+188,Chandigarh
+189,Changsha Huanghua
+190,Changzhou
+191,Chania
+192,Charlotte
+193,Chattanooga Metropolitan
+194,Chengdu
+195,Chengdu Tianfu
+196,Chennai
+197,Chiang Mai
+198,Chiang Rai
+199,Chicago Midway
+200,Chicago O'Hare
+201,Chisinau
+202,Chittagong Shah Amanat
+203,Chongqing Jiangbei
+204,Christchurch
+205,Christmas Island
+206,Cibao
+207,Cincinnati
+208,Ciudad Juarez
+209,Clark
+210,Cleveland
+211,Cluj-napoca
+212,Cochabamba
+213,Cochin
+214,Coffs Harbour
+215,Coimbatore
+216,College Station
+217,Cologne/bonn
+218,Colombo
+219,Colorado Springs
+220,Columbia Metropolitan
+221,Columbus
+222,Conakry
+223,Cooma-snowy Mountains
+224,Copenhagen
+225,Cordoba Intl
+226,Corfu
+227,Cork
+228,Corpus Christi
+229,Cotonou
+230,Coventry
+231,Craiova Intl
+232,Crown Point Tobago
+233,Cuiaba
+234,Curacao
+235,Cusco
+236,Cúcuta
+237,Da Nang
+238,Dakar
+239,Dalaman
+240,Dalian
+241,Dallas Fort-Worth
+242,Dallas Love Field
+243,Damascus
+244,Dammam Port
+245,Dane County Regional
+246,Dar Es Salaam
+247,Darbhanga
+248,Darwin
+249,Davao
+250,Dayton International
+251,Daytona Beach
+252,Deer Lake Regional
+253,Delhi
+254,Denizli Cardak
+255,Denpasar Bali
+256,Denver
+257,Derry
+258,Des Moines
+259,Destin-ft. Walton Beach
+260,Detroit
+261,Dhaka
+262,Dili
+263,Dimapur
+264,Dinard
+265,Djibouti Ambouli
+266,Doha
+267,Doncaster Sheffield
+268,Donetsk
+269,Dortmund
+270,Douala
+271,Douglas–Charles
+272,Dresden
+273,Dubai
+274,Dubai World Central
+275,Dublin
+276,Dubrovnik
+277,Duluth International
+278,Dundee
+279,Dunedin
+280,Durban
+281,Durgapur
+282,Durham/tees Valley
+283,Dushanbe
+284,Dusseldorf
+285,East Midlands
+286,Edinburgh
+287,Edmonton
+288,Eilat
+289,Eindhoven
+290,Ekaterinburg Koltsovo
+291,El Alto
+292,El Calafate
+293,El Paso
+294,El Salvador Intl
+295,Ende
+296,Enfidha-hammamet
+297,Entebbe
+298,Erbil Intl
+299,Ercan
+300,Exeter
+301,Fairbanks
+302,Faleolo
+303,Fargo
+304,Faro
+305,Fayetteville
+306,Fes-Saïss
+307,Florence
+308,Forli (bologna)
+309,Fort Lauderdale
+310,Fort Myers
+311,Fort Wayne
+312,Fort-de-France
+313,Fortaleza
+314,Foz do Iguacu
+315,Frankfurt Hahn
+316,Frankfurt Main
+317,Freetown
+318,Friedrichshafen
+319,Fuerteventura
+320,Fukuoka
+321,Funchal
+322,Fuzhou
+323,Gary Chicago
+324,Gdansk
+325,Geneva
+326,Genova
+327,Gibraltar
+328,Gimhae
+329,Girona
+330,Glacier Park
+331,Gladstone
+332,Glasgow
+333,Glasgow Prestwick
+334,Goa
+335,Gold Coast
+336,Gorontalo Jalaluddin
+337,Gothenburg City
+338,Gothenburg-landvetter
+339,Gran Canaria
+340,Granada
+341,Grand Rapids
+342,Graz
+343,Greater Binghamton
+344,Greater Rochester
+345,Green Bay
+346,Greenville–Spartanburg
+347,Grenoble
+348,Griffith
+349,Guadalajara
+350,Guangzhou
+351,Guatemala
+352,Guayaquil
+353,Guernsey
+354,Guilin Liangjiang
+355,Gulfport
+356,Guwahati
+357,Gwalior
+358,Haikou
+359,Hailar Dongshan
+360,Hakodate
+361,Halifax
+362,Hamad  Doha
+363,Hamburg
+364,Hamburg Lubek
+365,Hamilton
+366,Hamilton Island
+367,Hancock County-bar Harbor
+368,Hangzhou
+369,Hannover
+370,Hanoi
+371,Harare
+372,Harbin Taiping
+373,Hargeisa Egal
+374,Harrisburg
+375,Hartford
+376,Hat Yai
+377,Hatay
+378,Havana
+379,Heho
+380,Helsinki Vantaa
+381,Heraklion
+382,Hermosillo
+383,Hewanorra Intl
+384,Hilo
+385,Hiroshima
+386,Ho Chi Minh City
+387,Hobart
+388,Holguin
+389,Hong Kong
+390,Honiara
+391,Honolulu
+392,Horn Island
+393,Houston Hobby
+394,Houston IAH
+395,Hua Hin
+396,Humberside
+397,Huntsville
+398,Hurghada
+399,Hyderabad
+400,Iasi
+401,Ibiza
+402,Idaho Falls Regional
+403,Iloilo
+404,Incheon
+405,Indianapolis
+406,Innsbruck
+407,Inverness
+408,Ireland West Knock
+409,Irkutsk
+410,Islamabad
+411,Islay
+412,Isle Of Man
+413,Istanbul
+414,Istanbul Sabiha Gökçen
+415,Ivalo
+416,Izmir
+417,Jackson Hole
+418,Jacksonville
+419,Jaipur
+420,Jakarta
+421,Jakarta Halim
+422,Jammu
+423,Janakpur
+424,Jeddah
+425,Jerez De La Frontera
+426,Jersey
+427,Jharsuguda
+428,Jiamusi
+429,Jinan Yaoqiang
+430,Jinzhou
+431,Johannesburg
+432,John Wayne
+433,Juba
+434,Juliaca
+435,KLIA Kuala Lumpur
+436,Kabul
+437,Kahului Maui
+438,Kalamata
+439,Kalibo
+440,Kaliningrad
+441,Kalmar
+442,Kangerlussuaq
+443,Kanpur
+444,Kansai International
+445,Kansas City
+446,Kaohsiung
+447,Karachi
+448,Karlsruhe
+449,Kasane
+450,Kashgar
+451,Kastellorizo
+452,Kathmandu
+453,Katowice
+454,Kaunas
+455,Kayseri Erkilet
+456,Kazan
+457,Kefalonia
+458,Keflavik
+459,Kent
+460,Kerry
+461,Key West Intl
+462,Khartoum
+463,Kiev Borispol
+464,Kiev Zhulyany
+465,Kigali
+466,Kilimanjaro
+467,King Mswati III Intl
+468,Kingston
+469,Kinshasa
+470,Kirkenes
+471,Kirksville Municipal
+472,Kirkwall
+473,Kiruna
+474,Kittila
+475,Klagenfurt
+476,Koh Samui
+477,Kolkata
+478,Komatsu
+479,Kona
+480,Kos
+481,Kosice
+482,Kota Kinabalu
+483,Krabi
+484,Krakow
+485,Krasnodar
+486,Kristiansand
+487,Kualanamu
+488,Kuantan
+489,Kuching
+490,Kunming
+491,Kutaisi International
+492,Kuwait
+493,La Guardia
+494,La Palma
+495,La Rochelle
+496,Lagos
+497,Lahore
+498,Lamu
+499,Langkawi
+500,Lanseria
+501,Lanzarote Arrecife
+502,Lanzhou
+503,Laoag
+504,Larnaca
+505,Las Vegas
+506,Launceston
+507,Leeds Bradford
+508,Leh
+509,Leipzig/halle
+510,Leon Guanajuato
+511,Leticia
+512,Lexington
+513,Liberia
+514,Libreville
+515,Liege
+516,Lille
+517,Lilongwe
+518,Lima
+519,Limoges
+520,Linz
+521,Lisbon
+522,Lismore
+523,Little Rock
+524,Liverpool
+525,Livingstone
+526,Ljubljana
+527,London City
+528,London Gatwick
+529,London Heathrow
+530,London Stansted
+531,Long Beach
+532,Long Island Macarthur
+533,Los Angeles LAX
+534,Louisville
+535,Luanda
+536,Luang Prabang
+537,Lucknow
+538,Lugano
+539,Luleå
+540,Lusaka
+541,Luton
+542,Luxembourg
+543,Luxor
+544,Lviv
+545,Lyon
+546,Maastricht Aachen
+547,Macau
+548,Mackay
+549,Madrid Barajas
+550,Madurai
+551,Magong
+552,Mahon
+553,Malabo
+554,Malaga
+555,Male
+556,Mallam Aminu Kano Intl
+557,Malmo
+558,Malta
+559,Manado
+560,Managua
+561,Manaus
+562,Manchester
+563,Manchester–Boston Regional
+564,Mandalay Annisaton
+565,Mangalore
+566,Manila
+567,Manuel Crescencio Rejon
+568,Maputo
+569,Maracaibo La Chinita
+570,Marrakech
+571,Marsa Alam
+572,Marseille
+573,Mashhad
+574,Mataveri Intl
+575,Maun
+576,Mauritius
+577,Medan
+578,Medellin
+579,Medina
+580,Melbourne
+581,Melbourne (USA)
+582,Melbourne Avalon
+583,Melilla
+584,Memmingen
+585,Memphis
+586,Mexico City
+587,Miami
+588,Milan Bergamo
+589,Milan Linate
+590,Milan Malpensa
+591,Mildura
+592,Milwaukee
+593,Mineralnye Vody
+594,Minneapolis St Paul
+595,Minsk National
+596,Miri
+597,Mobile Regional
+598,Mombasa
+599,Monastir
+600,Monroe Regional
+601,Montego Bay
+602,Monterey Regional
+603,Monterrey
+604,Montevideo
+605,Montgomery Regional
+606,Montpellier
+607,Montréal
+608,Moscow Domodedovo
+609,Moscow Sheremetyevo
+610,Muenster-osnabrueck
+611,Mumbai
+612,Munich
+613,Murcia San Javier
+614,Muscat Seeb
+615,Muscle Shoals
+616,Mykonos
+617,Myrtle Beach
+618,Mytilene
+619,Nadi
+620,Nagpur
+621,Nairobi
+622,Nakhchivan
+623,Nakhon Si Thammarat
+624,Nanchang Changbei
+625,Nanning Wuxu
+626,Nantes
+627,Naples
+628,Naples Municipal
+629,Narrandeera-leeton
+630,Nashville
+631,Nassau
+632,Nauru International
+633,Ndola
+634,Nevsehir Kapadokya
+635,New Orleans
+636,New York JFK
+637,Newark
+638,Newcastle
+639,Newquay
+640,Nice
+641,Nimes
+642,Ningbo Lishe
+643,Nis Constantine the Great
+644,Norfolk
+645,Norman Manley
+646,Norrköping
+647,Northwest Florida Beaches
+648,Norwich
+649,Noumea
+650,Novosibirsk
+651,Nuremburg
+652,Nyaung U
+653,Oakland
+654,Odessa
+655,Ohrid
+656,Okinawa Naha
+657,Oklahoma City
+658,Olbia Costa Smeralda
+659,Omaha
+660,Omsk Tsentralny
+661,Ontario
+662,Orlando
+663,Orlando Sanford
+664,Oslo
+665,Ostend–Bruges
+666,Ostrava
+667,Ottawa
+668,Ouagadougou
+669,Ouani
+670,Oulu
+671,Outagamie County
+672,Owen Roberts International
+673,Paderborn
+674,Painushima Ishigaki
+675,Pakse
+676,Palau International
+677,Palembang
+678,Palermo
+679,Palm Beach
+680,Palm Springs
+681,Palma de Majorca
+682,Palonegro Intl
+683,Panama Albrook
+684,Panama Tocumen
+685,Papeete
+686,Paphos
+687,Paramaribo
+688,Paris CDG
+689,Paris Orly
+690,Paro
+691,Paros
+692,Patna
+693,Pattaya
+694,Pau
+695,Penang
+696,Pensacola
+697,Pereira Matecana Intl
+698,Perpignan
+699,Perth
+700,Philadelphia
+701,Phnom Penh
+702,Phoenix Sky Harbor
+703,Phoenix-Mesa Gateway
+704,Phu Quoc
+705,Phuket
+706,Piarco
+707,Piedmont Triad
+708,Pisa
+709,Pittsburgh
+710,Pleiku
+711,Plovdiv
+712,Plymouth
+713,Podgorica
+714,Pointe Noire
+715,Pointe-à-Pitre
+716,Poitiers
+717,Ponta Delgada
+718,Port Au Prince
+719,Port Augusta
+720,Port Elizabeth
+721,Port Harcourt
+722,Port Macquarie
+723,Port Moresby
+724,Port Vila Bauerfield
+725,Portland
+726,Portland International Jetport
+727,Porto
+728,Porto Alegre
+729,Poznan
+730,Prague
+731,Preveza
+732,Prince Rupert
+733,Princess Juliana Intl
+734,Pristina
+735,Providence
+736,Providenciales Intl
+737,Puerto Iguazu
+738,Puerto Maldonado
+739,Puerto Princesa
+740,Puerto Vallarta
+741,Pula
+742,Pulau Redang
+743,Pulau Tioman
+744,Pune
+745,Punta Cana
+746,Punta Del Este
+747,Punta Gorda
+748,Qingdao
+749,Quebec City
+750,Queenstown
+751,Quito Mariscal
+752,Raipur
+753,Rajbiraj
+754,Raleigh-Durham
+755,Rapid City Regional
+756,Raratonga
+757,Read more
+758,Recife
+759,Redding Municipal
+760,Regina
+761,Rennes
+762,Reno-tahoe
+763,Rhodes
+764,Richmond
+765,Riga
+766,Rijeka
+767,Rimini
+768,Rio De Janeiro
+769,Riyadh
+770,Roanoke Regional
+771,Robert L Bradshaw St Kitts
+772,Rockhampton
+773,Rodez
+774,Rogue Valley Medford
+775,Roi Et
+776,Roland Garros
+777,Rome Ciampino
+778,Rome Fiumicino
+779,Rostov Na Donu
+780,Rotterdam
+781,Rovaniemi
+782,Rzeszów-Jasionka
+783,Río Grande
+784,Sacramento
+785,Saint John
+786,Sal
+787,Salalah
+788,Salt Lake City
+789,Salvador
+790,Salzburg
+791,San Andres Island
+792,San Antonio
+793,San Diego
+794,San Francisco
+795,San Jose
+796,San Jose Intl
+797,San Juan
+798,San Luis Potosi
+799,San Sebastian
+800,Sana'a In't
+801,Sandakan
+802,Santa Genoveva
+803,Santander
+804,Santiago De Chile
+805,Santiago de Compostela
+806,Santiago de Cuba
+807,Santo Domingo
+808,Santorini
+809,Sanya
+810,Sao Paulo Congonhas
+811,Sao Paulo Guarulhos
+812,Sao Vicente
+813,Sapporo Chitose
+814,Sarajevo
+815,Saskatoon
+816,Savannah
+817,Sawyer
+818,Sde Dov
+819,Seattle
+820,Senai
+821,Seoul Gimpo
+822,Seoul Incheon
+823,Seville
+824,Seychelles
+825,Shanghai Hongqiao
+826,Shanghai Pudong
+827,Shannon
+828,Sharjah
+829,Sharm El Sheikh
+830,Shenyang
+831,Shenzhen Baoan
+832,Shirdi
+833,Shreveport
+834,Sialkot International
+835,Sibiu
+836,Siem Reap
+837,Simara
+838,Simferopol
+839,Singapore Changi
+840,Singapore Seletar
+841,Sioux Falls
+842,Sitia
+843,Skiathos
+844,Skopje
+845,Sligo
+846,Sofia
+847,South Bend
+848,Southampton
+849,Southend
+850,Sphinx International
+851,Split
+852,Springfield-Branson
+853,Srinagar
+854,St Louis
+855,St Lucia
+856,St Pete-Clearwater
+857,St Petersburg
+858,St Thomas
+859,St. John's
+860,Stavanger
+861,Stewart
+862,Stockholm Arlanda
+863,Stockholm Bromma
+864,Stockholm Vasteras
+865,Stockholm-skavsta
+866,Strasbourg
+867,Stuttgart
+868,Subang Kuala Lumpur
+869,Sukhothai
+870,Sumburgh
+871,Sunan Pyongyang
+872,Sunshine Coast
+873,Surabaya Juanda
+874,Surat Thani
+875,Surigao
+876,Suva Nausori
+877,Svalbard
+878,Sydney
+879,Syracuse Hancock
+880,Szczecin
+881,São Paulo Viracopos
+882,Taba
+883,Tabriz
+884,Taipei
+885,Taipei Songshan
+886,Tallahassee
+887,Tallin
+888,Tampa
+889,Tampere Pirkkala
+890,Tangier Ibn Battouta
+891,Tashkent
+892,Taupo
+893,Tauranga
+894,Tbilisi
+895,Techo International
+896,Tegucigalpa
+897,Tehran Imam Khomeini
+898,Tehran Mehrabad
+899,Tel Aviv
+900,Tenerife
+901,Terceira
+902,Thandwe
+903,Thessaloniki
+904,Tianjin Binhai
+905,Tijuana
+906,Timimoun
+907,Timisoara
+908,Tirana
+909,Tiruchirappalli
+910,Tivat
+911,Tokyo Haneda
+912,Tokyo Narita
+913,Toluca
+914,Tontouta
+915,Toronto City Centre
+916,Toronto Pearson
+917,Torp
+918,Toulon
+919,Toulouse
+920,Tours
+921,Townsville
+922,Trabzon
+923,Trapani-birgi
+924,Tri-Cities
+925,Trieste
+926,Tripoli
+927,Trivandrum
+928,Tromso
+929,Trondheim
+930,Tucson
+931,Tulsa International
+932,Tunis Carthage
+933,Turin
+934,Tweed New Haven
+935,Udaipur
+936,Udon Thani
+937,Ulaanbaatar
+938,University Park
+939,Urgench International
+940,Urumqi
+941,Ushuaia
+942,Vadodara
+943,Valencia
+944,Valladolid
+945,Vancouver
+946,Varadero
+947,Varna
+948,Venice Marco Polo
+949,Venice Treviso
+950,Veracruz
+951,Verona
+952,Victoria Falls
+953,Victoria Intl
+954,Vienna
+955,Vientiane
+956,Vilanculos
+957,Vilnius
+958,Visby
+959,Vladivostok
+960,Vnukovo
+961,Volgograd
+962,Waco
+963,Wagga Wagga
+964,Wakkanai
+965,Walvis Bay
+966,Warsaw Chopin
+967,Warsaw Modlin
+968,Warsaw-Radom
+969,Washington Dulles
+970,Washington National
+971,Waterford
+972,Weeze
+973,Weihai
+974,Wellington
+975,Wenzhou Longwan
+976,Westchester County
+977,Westerland
+978,Wichita
+979,Wick
+980,Wilkes-Barre Scranton
+981,Wilson
+982,Windhoek
+983,Winnipeg
+984,Wroclaw
+985,Xi'an
+986,Xiamen
+987,Xining
+988,Yangon
+989,Yaounde
+990,Yerevan
+991,Yichang Sanxia
+992,Yiwu
+993,Yogyakarta
+994,Yuzhno Sakhalinsk
+995,Zadar
+996,Zagreb
+997,Zakynthos
+998,Zanzibar
+999,Zaporizhia
+1000,Zaragoza
+1001,Zhengzhou
+1002,Zhuhai
+1003,Zhukovsky International
+1004,Zurich
