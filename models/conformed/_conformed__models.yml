@@ -30,12 +30,14 @@ models:
         description: Reviewer display name; 'unknown' when the source left it blank.
         data_type: varchar
         # Names a person. qdbd tints the row of any column tagged in the yml.
-        tags: [pii]
+        config:
+          tags: [pii]
         data_tests: [not_null]
       - name: nationality
         description: Reviewer nationality; 'unknown' when the source left it blank.
         data_type: varchar
-        tags: [pii]
+        config:
+          tags: [pii]
         data_tests: [not_null]
       - name: number_of_reviews
         description: Count of reviews this reviewer submitted across all four subjects.
