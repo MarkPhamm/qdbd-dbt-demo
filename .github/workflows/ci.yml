@@ -69,10 +69,11 @@ jobs:
           --defer --state base_dbt_artifacts/
 
   # Shares nothing with slim-ci, and needs no dbt at all: qdbd reads the
-  # model yml through `# @dbt: ..` in erd/conformed.txt. --strict fails the
-  # pull request when the diagram and the yml disagree (a column on one side
-  # only, a type mismatch, a table with no model). The comment shows what
-  # the pull request changes in the diagram, against its base branch.
+  # model yml through `# @dbt: ../..` in erd/conformed/conformed.txt.
+  # --strict fails the pull request when the diagram and the yml disagree (a
+  # column on one side only, a type mismatch, a table with no model). The
+  # comment shows what the pull request changes in the diagram, against its
+  # base branch.
   erd:
     runs-on: ubuntu-latest
     permissions:
