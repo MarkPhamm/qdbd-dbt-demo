@@ -8,6 +8,7 @@ date_flown_id FK >- dim_date.date_id
 origin_location_id FK >- dim_location.location_id
 destination_location_id FK >- dim_location.location_id
 transit_location_id FK >- dim_location.location_id
+route_id FK >- dim_route.route_id
 aircraft_id FK >- dim_aircraft.aircraft_id
 cabin_id FK >- dim_cabin.cabin_id
 is_verified
@@ -33,9 +34,6 @@ location_id PK
 city
 airport
 
-# @dbt: none
-# Not in dbt yet: one row per origin and destination pair, so a route can be
-# compared across the airlines that fly it.
 dim_route
 -
 route_id PK

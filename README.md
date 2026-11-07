@@ -94,7 +94,7 @@ $ qdbd check --strict erd; echo $?
 
 CI runs the strict check on every pull request.
 
-`dim_route` in `erd/airline_reviews.txt` is planned, not built. `# @dbt: none` above it skips it, so the check stays quiet.
+On `main`, `dim_route` in `erd/airline_reviews.txt` is planned, not built, and `# @dbt: none` above it keeps the check quiet. On this branch it is a model, so the line is gone and the yml describes it.
 
 ### Commands
 

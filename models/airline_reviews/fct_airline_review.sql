@@ -91,12 +91,24 @@ with_cabin as (
 
 ),
 
-with_ratings as (
+with_route as (
 
     select
         wcb.*,
-        {{ average_rating(rating_columns) }} as average_rating,
+        dr.route_id,
     from with_cabin as wcb
+    left join {{ ref('dim_route') }} as dr
+        on wcb.origin_location_id = dr.origin_location_id
+        and wcb.destination_location_id = dr.destination_location_id
+
+),
+
+with_ratings as (
+
+    select
+        wr.*,
+        {{ average_rating(rating_columns) }} as average_rating,
+    from with_route as wr
 
 ),
 
@@ -111,6 +123,7 @@ final as (
         origin_location_id,
         destination_location_id,
         transit_location_id,
+        route_id,
         aircraft_id,
         cabin_id,
         is_verified,
@@ -140,6 +153,7 @@ final as (
         and origin_location_id is not null
         and destination_location_id is not null
         and transit_location_id is not null
+        and route_id is not null
         and aircraft_id is not null
         and cabin_id is not null
         -- Every rating is unscored (null) or a valid 1-5 score.
