@@ -6,8 +6,9 @@ sources:
       A sample of the Skytrax extracts from skytrax_reviews_data, written to
       data/raw/ by scripts/sample_raw.py. dbt-duckdb reads them in place via
       read_csv - nothing is loaded into the database first.
-    meta:
-      external_location: "read_csv('{{ env_var('SKYTRAX_RAW_DIR', 'data/raw') }}/{name}.csv', header = true, sample_size = -1)"
+    config:
+      meta:
+        external_location: "read_csv('{{ env_var('SKYTRAX_RAW_DIR', 'data/raw') }}/{name}.csv', header = true, sample_size = -1)"
     tables:
       - name: airline_reviews
         description: One row per flight review left on Skytrax.
