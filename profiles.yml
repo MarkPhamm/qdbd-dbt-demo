@@ -1,0 +1,45 @@
+# ---------------------------------------------------------------------------
+# profiles.yml -- the CONNECTION config.
+#
+# This file is committed, which is normally a mistake. DuckDB is a local file
+# and has no credentials. With Snowflake or BigQuery the structure stays the
+# same: replace each secret with env_var("DBT_PASSWORD") and store it as a
+# GitHub secret.
+#
+# Each entry under `outputs:` is a target, and a target is what "an
+# environment" means here: where to write, and under what name.
+#
+# All three targets point at the same database file. They are separated only
+# by schema, which is how a warehouse does it too.
+# ---------------------------------------------------------------------------
+qdbd_dbt_demo:
+  target: dev # used when you don't pass --target
+  outputs:
+
+    # Laptop. One consumer, so every model lands in one flat `dev` schema.
+    dev:
+      type: duckdb
+      path: database/database.duckdb
+      schema: dev
+      threads: 4
+
+    # Pull requests. GitHub Actions sets DBT_CI_SCHEMA=ci_pr_42, so two open
+    # pull requests never write the same schema. The second argument of
+    # env_var is the default, which makes this target runnable on a laptop
+    # as `ci_local`.
+    ci:
+      type: duckdb
+      path: database/database.duckdb
+      schema: "{{ env_var('DBT_CI_SCHEMA', 'ci_local') }}"
+      threads: 4
+
+    # Production. `schema:` here is only a fallback. macros/generate_schema_name.sql
+    # sends real models to `staging`, `intermediate` and `marts`.
+    #
+    # On a warehouse this target would also carry different credentials, so CI
+    # could not write to prod. This DuckDB file has no such split.
+    prod:
+      type: duckdb
+      path: database/database.duckdb
+      schema: prod
+      threads: 4

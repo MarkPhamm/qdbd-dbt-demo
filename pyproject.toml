@@ -1,0 +1,17 @@
+# ---------------------------------------------------------------------------
+# Python dependencies, managed by uv.
+#
+# Why pin exact versions?  Because CI must run the SAME dbt you run locally.
+# If your laptop has dbt 1.12 and the GitHub runner installs 1.13, you will
+# eventually hit a bug that reproduces in exactly one of the two places --
+# the worst kind of bug. `uv.lock` (committed) makes both identical.
+# ---------------------------------------------------------------------------
+[project]
+name = "qdbd-dbt-demo"
+version = "0.1.0"
+description = "A dbt + DuckDB project that shows qdbd: yml descriptions, git diff, and dev/ci/prod targets"
+requires-python = "==3.12.*"
+dependencies = [
+    "dbt-core==1.12.5",
+    "dbt-duckdb==1.11.0",
+]

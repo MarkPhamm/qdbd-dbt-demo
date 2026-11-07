@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: int_order_payments
+    description: "Payments aggregated to one row per order. Not for end users."
+    columns:
+      - name: order_id
+        description: "Primary key. One row per order that has payments."
+        data_type: integer
+        data_tests: [unique, not_null]
+      - name: payment_count
+        description: "How many payments were taken for the order."
+        data_type: bigint
+      - name: total_amount
+        description: "Sum of payment amounts, in dollars."
+        data_type: double
+        data_tests: [not_null]

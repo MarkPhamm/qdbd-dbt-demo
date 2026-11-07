@@ -1,0 +1,47 @@
+version: 2
+
+seeds:
+  - name: raw_customers
+    description: "Stand-in for a customer source table. In production this would be a source, not a seed."
+    columns:
+      - name: id
+        description: "Source primary key."
+        data_type: integer
+      - name: first_name
+        description: "Given name as the source stored it."
+        data_type: varchar
+      - name: last_name
+        description: "Family name as the source stored it."
+        data_type: varchar
+
+  - name: raw_orders
+    description: "Stand-in for an order source table."
+    columns:
+      - name: id
+        description: "Source primary key."
+        data_type: integer
+      - name: user_id
+        description: "Customer id in the source. Staging renames this to customer_id."
+        data_type: integer
+      - name: order_date
+        description: "Date the order was placed."
+        data_type: date
+      - name: status
+        description: "Source status: completed, returned, or placed."
+        data_type: varchar
+
+  - name: raw_payments
+    description: "Stand-in for a payment source table. Amounts are in cents."
+    columns:
+      - name: id
+        description: "Source primary key."
+        data_type: integer
+      - name: order_id
+        description: "Order this payment was taken against."
+        data_type: integer
+      - name: payment_method
+        description: "{{ doc('payment_method') }}"
+        data_type: varchar
+      - name: amount
+        description: "Amount in cents. Staging divides by 100."
+        data_type: integer

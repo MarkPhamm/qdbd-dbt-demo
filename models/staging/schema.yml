@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "One row per customer, renamed from raw_customers."
+    columns:
+      - name: customer_id
+        description: "Primary key. Renamed from raw_customers.id."
+        data_type: integer
+        data_tests: [unique, not_null]
+      - name: first_name
+        description: "Given name."
+        data_type: varchar
+      - name: last_name
+        description: "Family name."
+        data_type: varchar
+
+  - name: stg_orders
+    description: "One row per order, renamed from raw_orders."
+    columns:
+      - name: order_id
+        description: "Primary key. Renamed from raw_orders.id."
+        data_type: integer
+        data_tests: [unique, not_null]
+      - name: customer_id
+        description: "Who placed the order. Renamed from raw_orders.user_id."
+        data_type: integer
+      - name: order_date
+        description: "Date the order was placed."
+        data_type: date
+      - name: status
+        description: "completed, returned, or placed."
+        data_type: varchar
+        data_tests:
+          # A new status upstream fails this test in CI before it reaches prod.
+          - accepted_values:
+              arguments:
+                values: ['completed', 'returned', 'placed']
+
+  - name: stg_payments
+    description: "One row per payment. Amounts converted from cents to dollars."
+    columns:
+      - name: payment_id
+        description: "Primary key."
+        data_type: integer
+        data_tests: [unique, not_null]
+      - name: order_id
+        description: "The order this payment settles."
+        data_type: integer
+      - name: payment_method
+        description: "{{ doc('payment_method') }}"
+        data_type: varchar
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['credit_card', 'coupon', 'bank_transfer', 'gift_card']
+      - name: amount
+        description: "Amount in dollars."
+        data_type: double

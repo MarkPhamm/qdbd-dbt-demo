@@ -1,0 +1,113 @@
+# CI.
+# A pull request opens two independent questions:
+#   slim-ci  — are the numbers still right? Build only what changed, defer the rest to prod.
+#   erd      — did a table or column appear, vanish or get renamed?
+#
+# This file must not write to production. That is cd.yml.
+
+name: ci
+
+on:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  slim-ci:
+    runs-on: ubuntu-latest
+    env:
+      DBT_PROFILES_DIR: .
+      DBT_CI_SCHEMA: ci_pr_${{ github.event.pull_request.number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.12"
+
+      - name: Install the locked dbt
+        run: uv sync --frozen
+
+      - name: Download the latest CD artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p prod_dbt_artifacts database
+          RUN_ID=$(gh run list \
+            --workflow=cd.yml \
+            --branch=main \
+            --status=success \
+            --limit=1 \
+            --json databaseId \
+            --jq '.[0].databaseId')
+          if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
+            echo "No successful cd.yml run on main yet."
+            echo "Merge to main once (or Run workflow) so CD can upload artifacts."
+            exit 1
+          fi
+          gh run download "$RUN_ID" --name prod-dbt-artifacts --dir prod_dbt_artifacts
+          cp prod_dbt_artifacts/database.duckdb database/database.duckdb
+
+      - name: Slim CI
+        run: >
+          uv run dbt build --target ci
+          --select state:modified+
+          --defer --state prod_dbt_artifacts/
+
+  # Shares nothing with slim-ci: no prod artifact, no --defer, no state.
+  # It builds the whole project from the seeds into its own schema, so it
+  # stays green on a repository that has never run CD.
+  erd:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # the second action posts one comment
+    env:
+      DBT_PROFILES_DIR: .
+      DBT_CI_SCHEMA: ci_pr_${{ github.event.pull_request.number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.12"
+
+      - name: Install the locked dbt
+        run: uv sync --frozen
+
+      # catalog.json is what knows the column types, and dbt can only write it
+      # for relations that exist.
+      - name: Build, then describe what got built
+        run: |
+          uv run dbt build --target ci
+          uv run dbt docs generate --target ci
+
+      # Fail if erd/generated/ does not match the project. comment is off:
+      # both qdbd steps would otherwise fight over the same comment marker.
+      - uses: MarkPhamm/quickdbd-cli@v0.6.0
+        with:
+          dbt-manifest: target/manifest.json
+          path: erd/generated
+          dbt-check: "true"
+          comment: "false"
+          upload-artifact: "false"
+          output: target/generated.html
+          qdbd-version: "0.6.0"
+
+      # Hand-written schema (yml via # @dbt:) and the generated import, each
+      # as its own diagram. On a pull request the build uses --diff-base and
+      # one comment has a section per path.
+      - uses: MarkPhamm/quickdbd-cli@v0.6.0
+        with:
+          path: schema erd/generated
+          site: site/
+          strict: "true"
+          qdbd-version: "0.6.0"

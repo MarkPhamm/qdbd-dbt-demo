@@ -1,0 +1,40 @@
+name: qdbd_dbt_demo
+version: "1.0.0"
+
+# Which profile (in profiles.yml) this project uses. The profile holds the
+# connection details; this file holds the project details. Keeping them
+# separate is what lets one project connect to dev, ci, or prod unchanged.
+profile: qdbd_dbt_demo
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+
+# `dbt clean` deletes these.
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Seeds stand in for raw source data, so in production they get their own
+# `raw` schema. Without this they'd fall back to the target's schema and leave
+# a stray `prod` schema containing nothing but CSVs.
+seeds:
+  qdbd_dbt_demo:
+    +schema: raw
+
+models:
+  qdbd_dbt_demo:
+    # `+schema:` declares which layer a folder belongs to. Whether anything
+    # acts on that declaration is decided by macros/generate_schema_name.sql:
+    # production splits the layers into real schemas, dev and ci ignore it
+    # and put everything in one flat schema.
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+    marts:
+      +materialized: table
+      +schema: marts
