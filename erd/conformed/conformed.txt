@@ -1,8 +1,10 @@
-# Hand-written diagram, one file per star schema. The tables, columns and
+# Hand-written diagram, one folder per star schema. The tables, columns and
 # relationships are written here. Table and column descriptions and column
-# types come from the dbt yml, through the line below, which covers every file
-# in this folder. No manifest.json, no `dbt parse`.
-# @dbt: ..
+# types come from the dbt yml, through the line below. It covers every file
+# under erd/, because `qdbd check erd` compiles them as one schema. The path
+# is relative to this file: ../.. is the repo root, where dbt_project.yml is.
+# No manifest.json, no `dbt parse`.
+# @dbt: ../..
 
 # Conformed dimensions: built once, joined by every fact that needs them.
 
