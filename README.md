@@ -1,8 +1,56 @@
 # qdbd-dbt-demo
 
-A dbt project on DuckDB, built so [qdbd](https://qdbd.dev/) has something real to draw. The ERD in `erd/` is written by hand. Descriptions, tags and column types come from the dbt yml, through one `# @dbt:` line, with no `manifest.json`. CI fails when the two disagree. Each environment (dev, qa, prod) publishes its own diagram, and qa and dev highlight what promoting them would change.
+A working demo of [qdbd](https://qdbd.dev/) on a real dbt project. Four star schemas on DuckDB, a hand-written ERD in `erd/`, and one `# @dbt:` line that pulls descriptions, tags and column types straight from the dbt yml. CI checks the diagram against the yml, every pull request gets a schema diff, and each environment publishes its own diagram.
+
+**Live diagrams:** [production](https://markphamm.github.io/qdbd-dbt-demo/) · [qa vs main](https://markphamm.github.io/qdbd-dbt-demo/qa/) · [dev vs qa](https://markphamm.github.io/qdbd-dbt-demo/dev/)
+
+[![The production ER diagram in qdbd: four star schemas in shaded regions around the conformed dimensions](docs/images/qdbd-overview.png)](https://markphamm.github.io/qdbd-dbt-demo/)
+
+_The production diagram: one shaded region per file under `erd/`, mirroring the folders under `models/`. Click any table for its dbt descriptions, types, tags and relationships._
 
 The data is a sample of the Skytrax reviews from [skytrax_reviews_data](https://github.com/MarkPhamm/skytrax_reviews_data), modelled the same way: four star schemas on one shared set of dimensions. The CI/CD follows [dbt_duckdb_cicd_template](https://github.com/MarkPhamm/dbt_duckdb_cicd_template).
+
+## What qdbd does
+
+[qdbd](https://qdbd.dev/) keeps a database diagram as plain text in the repo — QuickDBD syntax or DBML — and builds it into one interactive HTML page. It checks the schema, lays it out, renders it, and compares versions. No database connection, no diagram-tool account, and no second copy of the schema to keep in sync.
+
+For a dbt project, one line connects the two:
+
+```text
+# @dbt: ../..
+```
+
+qdbd reads the project's `.yml` and `.md` files directly and adds their descriptions, column types and tags to the diagram. No `manifest.json`, no `dbt parse`, no build. That is the whole integration used here; the [dbt guide](https://qdbd.dev/dbt/) covers the manifest route for projects that prefer it.
+
+What that gives this repo:
+
+- **The diagram is reviewed like code.** `erd/` holds five hand-written files, one per schema: the four star schemas and the conformed dimensions. A model change and its diagram change land in the same pull request.
+- **dbt stays the source of truth for documentation.** Descriptions, `pii` tags and column types come from the yml. The picture cannot quietly drift from the docs.
+- **Drift fails the build.** `qdbd check --strict erd` fails when a column exists on one side only, a type changes base type, or a table has no model.
+- **A branch shows what merging it changes.** `qdbd diff` lists it, `qdbd build --diff-base` colours it, and the GitHub Action posts it on the pull request.
+- **The same schema answers questions.** `qdbd path` returns the shortest join and its SQL; `qdbd mcp` serves tables, keys and paths to an AI agent.
+
+| I want to… | Command | In this repo |
+|---|---|---|
+| Browse and edit the diagram | `qdbd serve erd` | local live editor; dragged positions go to `erd/qdbd.layout.json` |
+| Build a shareable page | `qdbd build erd -o erd.html` | GitHub Pages, one page per environment |
+| Catch diagram/yml drift | `qdbd check --strict erd` | `ci.yml` › `erd` |
+| See a branch's schema diff | `qdbd diff --base main erd` | pull-request comment and coloured diagram |
+| Find a join | `qdbd path erd --from dim_customer --to fct_seat_review` | prints the shortest path and `FROM`/`JOIN` SQL |
+| Export for a doc or slide | `qdbd export erd -o erd.svg` | PNG, SVG and draw.io |
+| Let an agent read the schema | `qdbd mcp` | MCP over stdio |
+
+### The yml, in the diagram
+
+[![dim_customer in qdbd, filtered to tag:pii, with its dbt descriptions, pii tags and column types in the detail panel](docs/images/qdbd-dbt-metadata.png)](https://markphamm.github.io/qdbd-dbt-demo/#f=tag%3Apii&t=dim_customer&z=1.5&c=810%2C1140)
+
+In the Filter box, `tag:pii` narrows 13 tables to `dim_customer`. Its table description, all ten column descriptions and the `varchar`/`bigint` types come from `models/conformed/_conformed__models.yml` and the `{% docs %}` blocks in `models/docs.md`. The `pii` tags tint `customer_name` and `nationality`; the same tags are what the filter matches.
+
+### A branch shows what merging it changes
+
+[![fct_airline_review selected on qa, marked CHANGED, with + cabin_id and - seat_type in the detail panel, and dim_cabin marked NEW](docs/images/qdbd-diff.png)](https://markphamm.github.io/qdbd-dbt-demo/qa/#t=fct_airline_review)
+
+`/qa/` is built with `--diff-base main`. `dim_cabin` is green (new); `fct_airline_review` is amber (changed). Selecting the fact lists `+ cabin_id` and `- seat_type`; the banner counts the two new relationships. The same change is what the `erd` job comments on the promotion pull request.
 
 ## Setup
 
@@ -59,9 +107,9 @@ Grain of every fact: one row per review submission. Row counts are for the commi
 
 Skytrax reviews are self-reported. Anything built on them is directional, not population-level.
 
-## The diagram: `# @dbt:`
+## The dbt link: `# @dbt:`
 
-`erd/` is five hand-written files, one folder per star schema, mirroring `models/`:
+`erd/` is five hand-written files, one folder per schema. The four star schemas plus `conformed` mirror `models/`:
 
 ```
 erd/
@@ -84,7 +132,7 @@ Tables match dbt models by name, ignoring case. Columns match by name. Your `.tx
 | Table descriptions | Every table. `dim_customer` shows its yml description first, then the comment written above it in `erd/conformed/conformed.txt` |
 | Column descriptions | Every column with one. `average_rating` and `rating_band` come from `{% docs %}` blocks in `models/docs.md` |
 | Column types | Every column the `.txt` leaves untyped is filled from `data_type`. `fct_lounge_review.rating_band` is typed `varchar(7)` in the file, so it keeps that |
-| Tags | `customer_name` and `nationality` are tagged `pii` in `models/conformed/_conformed__models.yml`, so their rows are tinted. Try the filter `tag:pii` |
+| Tags | `customer_name` and `nationality` are tagged `pii` in `models/conformed/_conformed__models.yml`, so their rows are tinted. Type `tag:pii` in the Filter box |
 
 Header colours come from the names: `dim_` and `fct_` are tagged and coloured with no config.
 
@@ -102,7 +150,7 @@ $ qdbd check --strict erd; echo $?
 
 CI runs the strict check on every pull request.
 
-`dim_route` in `erd/airline_reviews/airline_reviews.txt` is planned, not built. `# @dbt: none` above it skips it, so the check stays quiet.
+On `main`, `dim_route` in `erd/airline_reviews/airline_reviews.txt` is planned, not built, and `# @dbt: none` above it keeps the check quiet. On this branch it is a model, so the line is gone and the yml describes it.
 
 ### Commands
 
@@ -112,6 +160,17 @@ qdbd check --strict erd
 qdbd build erd -o /tmp/erd.html
 qdbd build erd -s group:lounge_reviews -o /tmp/lounge.html
 qdbd path erd --from dim_customer --to fct_seat_review
+```
+
+`qdbd path` prints the path and the SQL, so the answer can go straight into a query:
+
+```console
+$ qdbd path erd --from dim_customer --to fct_seat_review
+dim_customer -> fct_seat_review: 1 join(s)
+  dim_customer.customer_id -> fct_seat_review.customer_id (1:N)
+
+FROM dim_customer
+JOIN fct_seat_review ON fct_seat_review.customer_id = dim_customer.customer_id
 ```
 
 Positions live in `erd/qdbd.layout.json`. `qdbd layout --by-group erd` rewrites them with one region per file; qdbd labels each region with the file's path under `erd/`, such as `lounge_reviews/lounge_reviews`.
@@ -135,9 +194,9 @@ Changes move `feature → dev → qa → main`, one pull request per hop.
 
 | Branch | Ahead of the next one by | Pages |
 |---|---|---|
-| `main` | (production) | `/` |
-| `qa` | `dim_cabin`, a conformed dimension, with `cabin_id` on the airline and seat facts | `/qa/`, coloured against `main` |
-| `dev` | `dim_route` built as a model, with `route_id` on `fct_airline_review` | `/dev/`, coloured against `qa` |
+| `main` | (production) | [`/`](https://markphamm.github.io/qdbd-dbt-demo/) |
+| `qa` | `dim_cabin`, a conformed dimension, with `cabin_id` on the airline and seat facts | [`/qa/`](https://markphamm.github.io/qdbd-dbt-demo/qa/), coloured against `main` |
+| `dev` | `dim_route` built as a model, with `route_id` on `fct_airline_review` | [`/dev/`](https://markphamm.github.io/qdbd-dbt-demo/dev/), coloured against `qa` |
 
 On `qa` or `dev`:
 
@@ -150,16 +209,23 @@ qdbd build erd --diff-base main -o /tmp/erd-diff.html
 
 Three workflows, no secrets. Everything they need is in this repo.
 
+```mermaid
+flowchart LR
+    feature["feature branch"] -->|"PR · ci.yml"| dev["dev"]
+    dev -->|"PR · ci.yml"| qa["qa"]
+    qa -->|"PR · ci.yml"| main["main = prod"]
+
+    dev -->|"push · cd.yml"| cd["dbt build<br/>--target dev / qa / prod"]
+    qa -->|"push · cd.yml"| cd
+    main -->|"push · cd.yml"| cd
+
+    cd -->|"green · pages.yml"| pages["GitHub Pages<br/>/dev/ · /qa/ · /"]
 ```
- feature ──PR──> dev ──PR──> qa ──PR──> main
-            │          │          │
-          ci.yml     ci.yml     ci.yml      pull request: slim-ci + erd check and comment
-                 │          │          │
-               cd.yml     cd.yml     cd.yml     push: dbt build --target dev | qa | prod
-                 │          │          │
-                 └──────────┴────┬─────┘
-                             pages.yml          after each green cd.yml: /dev/  /qa/  /
-```
+
+Every pull request runs two jobs that share nothing:
+
+- `slim-ci` asks whether the data still builds. It downloads the base branch's last green `cd.yml` artifacts and builds the models the pull request changed, plus everything downstream of them, deferring the rest.
+- `erd` asks whether the diagram still matches the yml. It runs `qdbd check --strict erd`, posts one comment with the schema diff, and uploads the diagram as an artifact. It needs no dbt, no database and no earlier run.
 
 | Workflow | Runs on | Does | Needs |
 |---|---|---|---|
@@ -167,6 +233,10 @@ Three workflows, no secrets. Everything they need is in this repo.
 | `ci.yml` › `slim-ci` | pull request into `dev`, `qa`, `main` | downloads `dbt-artifacts` from the **base branch's** last green `cd.yml`, then `dbt build --target ci --select state:modified+ --defer` | a green `cd.yml` on the base branch |
 | `ci.yml` › `erd` | same pull request | `qdbd check --strict erd`, one comment with what the pull request changes in the diagram, the diagram as the `erd` artifact | nothing, not even dbt |
 | `pages.yml` | after a green `cd.yml`, or Run workflow | checks out all three branches, builds `erd/` on each (`qa` with `--diff-base main`, `dev` with `--diff-base qa`), deploys to GitHub Pages | Pages turned on |
+
+[![The qdbd comment on the qa → main pull request: 1 table added, 2 changed, 2 relationships added](docs/images/qdbd-pr-comment.png)](https://github.com/MarkPhamm/qdbd-dbt-demo/pull/2)
+
+*The `erd` job's one comment on the real [`qa → main` pull request](https://github.com/MarkPhamm/qdbd-dbt-demo/pull/2). It is updated on every push.*
 
 ### Set it up
 
@@ -256,3 +326,5 @@ This repo does not set these up. The docs do:
 - [DBML](https://qdbd.dev/dbml/)
 - [PNG, SVG and draw.io](https://qdbd.dev/exports/)
 - [VS Code](https://qdbd.dev/vscode/)
+
+This repo is also the [Skytrax demo on qdbd.dev](https://qdbd.dev/demo/skytrax/#t=dim_customer).

@@ -19,6 +19,34 @@ models:
         data_type: varchar
         data_tests: [not_null]
 
+  - name: dim_route
+    description: >
+      Route dimension. Grain: one row per (origin, destination) location pair,
+      regardless of airline or layover.
+    columns:
+      - name: route_id
+        description: Primary key - surrogate hash of (origin_location_id, destination_location_id).
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: origin_location_id
+        description: FK to dim_location - where the route starts.
+        data_type: varchar
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_location')
+                field: location_id
+      - name: destination_location_id
+        description: FK to dim_location - where the route ends.
+        data_type: varchar
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_location')
+                field: location_id
+
   - name: fct_airline_review
     description: >
       Airline (flight) review fact. Grain: one row per review submission.
@@ -91,6 +119,15 @@ models:
               arguments:
                 to: ref('dim_location')
                 field: location_id
+      - name: route_id
+        description: FK to dim_route - origin and destination as one pair.
+        data_type: varchar
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_route')
+                field: route_id
       - name: aircraft_id
         description: FK to dim_aircraft.
         data_type: varchar
