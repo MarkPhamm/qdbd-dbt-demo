@@ -100,13 +100,18 @@ models:
               arguments:
                 to: ref('dim_aircraft')
                 field: aircraft_id
+      - name: cabin_id
+        description: FK to dim_cabin - the cabin flown.
+        data_type: varchar
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_cabin')
+                field: cabin_id
       - name: is_verified
         description: Whether Skytrax marked the review as a verified trip.
         data_type: boolean
-      - name: seat_type
-        description: "Cabin flown: Economy Class, Premium Economy, Business Class, First Class or unknown."
-        data_type: varchar
-        data_tests: [not_null]
       - name: type_of_traveller
         description: "Trip type: Solo Leisure, Couple Leisure, Family Leisure, Business or unknown."
         data_type: varchar

@@ -4,6 +4,7 @@ review_id PK
 airline_id FK >- dim_airline.airline_id
 aircraft_id FK >- dim_aircraft.aircraft_id
 seat_configuration_id FK >- dim_seat_configuration.seat_configuration_id
+cabin_id FK >- dim_cabin.cabin_id
 customer_id FK >- dim_customer.customer_id
 date_submitted_id FK >- dim_date.date_id
 date_flown_id FK >- dim_date.date_id

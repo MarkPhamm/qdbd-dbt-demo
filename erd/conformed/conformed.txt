@@ -29,6 +29,11 @@ seat_review_count
 first_review_date
 latest_review_date
 
+dim_cabin
+-
+cabin_id PK
+cabin_name
+
 dim_aircraft
 -
 aircraft_id PK

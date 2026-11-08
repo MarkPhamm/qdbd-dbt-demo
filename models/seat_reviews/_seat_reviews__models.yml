@@ -55,6 +55,15 @@ models:
               arguments:
                 to: ref('dim_seat_configuration')
                 field: seat_configuration_id
+      - name: cabin_id
+        description: FK to dim_cabin - the cabin flown.
+        data_type: varchar
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_cabin')
+                field: cabin_id
       - name: customer_id
         description: FK to dim_customer.
         data_type: varchar
