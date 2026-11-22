@@ -146,8 +146,8 @@ jobs:
             git fetch --no-tags origin "refs/pull/${num}/head"
             git worktree add --detach "envs/pr-${num}" FETCH_HEAD
             git fetch --no-tags origin "+refs/heads/${base}:refs/remotes/origin/${base}"
-            if ! build_tree "envs/pr-${num}" "$GITHUB_WORKSPACE/site/pr/${num}" pr "$num against $base" "pr/${num}/" --diff-base "origin/${base}"; then
-              record pr "$num against $base" "" "" "schema check failed"
+            if ! build_tree "envs/pr-${num}" "$GITHUB_WORKSPACE/site/pr/${num}" pr "#$num against $base" "pr/${num}/" --diff-base "origin/${base}"; then
+              record pr "#$num against $base" "" "" "schema check failed"
             fi
           done < <(gh pr list --state open --limit 100 --json number,baseRefName --jq '.[] | [.number, .baseRefName] | @tsv')
 
