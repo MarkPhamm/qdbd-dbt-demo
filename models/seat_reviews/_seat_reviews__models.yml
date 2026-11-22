@@ -19,6 +19,18 @@ models:
       - name: seats_per_row
         description: Seats abreast, parsed from seat_layout; null when the layout is not an NxN pattern.
         data_type: integer
+      - name: pitch_inches
+        description: Seat pitch in inches.
+        data_type: bigint
+      - name: width_inches
+        description: Seat width in inches.
+        data_type: bigint
+      - name: is_lie_flat
+        description: True when the seat reclines to a bed.
+        data_type: boolean
+      - name: has_direct_aisle
+        description: True when the seat opens onto the aisle.
+        data_type: boolean
 
   - name: fct_seat_review
     description: >
@@ -55,6 +67,21 @@ models:
               arguments:
                 to: ref('dim_seat_configuration')
                 field: seat_configuration_id
+      - name: lie_flat
+        description: True when the reviewer says the seat became a bed.
+        data_type: boolean
+      - name: pitch_inches
+        description: Seat pitch the reviewer reported, in inches.
+        data_type: bigint
+      - name: width_inches
+        description: Seat width the reviewer reported, in inches.
+        data_type: bigint
+      - name: privacy_rating
+        description: 1 to 5 score for privacy.
+        data_type: bigint
+      - name: power_rating
+        description: 1 to 5 score for power at the seat.
+        data_type: bigint
       - name: cabin_id
         description: FK to dim_cabin - the cabin flown.
         data_type: varchar

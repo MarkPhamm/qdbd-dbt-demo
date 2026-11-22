@@ -3,6 +3,11 @@ fct_lounge_review
 review_id PK
 airline_id FK >- dim_airline.airline_id
 lounge_id FK >- dim_lounge.lounge_id
+amenity_id FK >- dim_amenity.amenity_id
+shower_rating
+food_rating
+crowding_rating
+visit_duration_minutes
 customer_id FK >- dim_customer.customer_id
 date_submitted_id FK >- dim_date.date_id
 date_visit_id FK >- dim_date.date_id
@@ -39,3 +44,12 @@ lounge_id PK
 lounge_name
 airport
 type_of_lounge
+has_shower
+has_daybed
+max_stay_hours
+
+dim_amenity
+-
+amenity_id PK
+amenity_name
+amenity_group

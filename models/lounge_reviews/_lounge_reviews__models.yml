@@ -22,6 +22,15 @@ models:
         description: "Access tier: Business Class, First Class, Frequent Flyer, Members, Pay to Use or unknown."
         data_type: varchar
         data_tests: [not_null]
+      - name: has_shower
+        description: True when the lounge has a shower.
+        data_type: boolean
+      - name: has_daybed
+        description: True when the lounge has a day bed.
+        data_type: boolean
+      - name: max_stay_hours
+        description: Longest stay the lounge allows.
+        data_type: bigint
 
   - name: fct_lounge_review
     description: >
@@ -49,6 +58,21 @@ models:
               arguments:
                 to: ref('dim_lounge')
                 field: lounge_id
+      - name: amenity_id
+        description: FK to dim_amenity.
+        data_type: bigint
+      - name: shower_rating
+        description: 1 to 5 score for the shower.
+        data_type: bigint
+      - name: food_rating
+        description: 1 to 5 score for the food.
+        data_type: bigint
+      - name: crowding_rating
+        description: 1 to 5 score for how crowded the lounge was.
+        data_type: bigint
+      - name: visit_duration_minutes
+        description: Minutes the reviewer spent in the lounge.
+        data_type: bigint
       - name: customer_id
         description: FK to dim_customer.
         data_type: varchar
@@ -154,4 +178,20 @@ models:
         data_tests: [not_null]
       - name: dbt_loaded_at
         data_type: timestamptz
+        data_tests: [not_null]
+
+  - name: dim_amenity
+    description: "Lounge amenity. Grain: one row per amenity a lounge can offer."
+    columns:
+      - name: amenity_id
+        description: Primary key.
+        data_type: bigint
+        data_tests: [unique, not_null]
+      - name: amenity_name
+        description: shower, day bed, spa, hot food, or none.
+        data_type: varchar
+        data_tests: [not_null]
+      - name: amenity_group
+        description: washroom, rest, dining, or none.
+        data_type: varchar
         data_tests: [not_null]
