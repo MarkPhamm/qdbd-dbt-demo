@@ -46,6 +46,15 @@ models:
               arguments:
                 to: ref('dim_location')
                 field: location_id
+      - name: distance_km
+        description: Great-circle distance of the route.
+        data_type: bigint
+      - name: is_international
+        description: True when origin and destination are in different countries.
+        data_type: boolean
+      - name: typical_duration_minutes
+        description: Scheduled block time for the route.
+        data_type: bigint
 
   - name: fct_airline_review
     description: >
@@ -146,6 +155,21 @@ models:
               arguments:
                 to: ref('dim_cabin')
                 field: cabin_id
+      - name: disruption_id
+        description: FK to dim_disruption.
+        data_type: bigint
+      - name: delay_minutes
+        description: Minutes late at the destination gate.
+        data_type: bigint
+      - name: missed_connection
+        description: True when the reviewer missed a connecting flight.
+        data_type: boolean
+      - name: boarding_rating
+        description: 1 to 5 score for boarding.
+        data_type: bigint
+      - name: arrival_rating
+        description: 1 to 5 score for the arrival experience.
+        data_type: bigint
       - name: is_verified
         description: Whether Skytrax marked the review as a verified trip.
         data_type: boolean
@@ -234,4 +258,20 @@ models:
       - name: dbt_loaded_at
         description: Timestamp this row was last written by dbt.
         data_type: timestamptz
+        data_tests: [not_null]
+
+  - name: dim_disruption
+    description: "Why a flight was late or missed. Grain: one row per disruption."
+    columns:
+      - name: disruption_id
+        description: Primary key.
+        data_type: bigint
+        data_tests: [unique, not_null]
+      - name: disruption_name
+        description: none, late inbound aircraft, weather, technical, crew, or unknown.
+        data_type: varchar
+        data_tests: [not_null]
+      - name: disruption_severity
+        description: none, minor, major, or unknown.
+        data_type: varchar
         data_tests: [not_null]
