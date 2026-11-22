@@ -116,6 +116,21 @@ models:
                 values: ['bad', 'medium', 'good', 'unknown']
       - name: review_text
         data_type: varchar
+      - name: traveller_type_id
+        description: FK to dim_traveller_type.
+        data_type: bigint
+      - name: review_channel_id
+        description: FK to dim_review_channel.
+        data_type: bigint
+      - name: review_language
+        description: Language the review was written in.
+        data_type: varchar
+      - name: submission_device
+        description: Device used to submit the review.
+        data_type: varchar
+      - name: helpful_votes
+        description: Readers who marked the review helpful.
+        data_type: bigint
       - name: source_updated_at
         data_type: timestamp
         data_tests: [not_null]
