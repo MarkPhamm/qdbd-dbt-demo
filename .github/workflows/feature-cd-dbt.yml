@@ -1,0 +1,54 @@
+# feature-cd-dbt. Push to dev or qa.
+# Build that environment and save the files the next pull request into it needs.
+#
+#   dev -> --target dev    one flat dev schema
+#   qa  -> --target qa     one flat qa schema
+#
+# This file must not run on a pull request. That is feature-ci-dbt.yml.
+
+name: feature-cd-dbt
+
+on:
+  push:
+    branches: [dev, qa]
+  workflow_dispatch:
+
+concurrency:
+  group: feature-cd-dbt-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  dbt:
+    runs-on: ubuntu-latest
+    env:
+      DBT_PROFILES_DIR: .
+      DBT_TARGET: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.12"
+
+      - name: Install the locked dbt
+        run: |
+          uv sync --frozen
+          uv run dbt deps
+
+      - name: Build ${{ env.DBT_TARGET }}
+        run: uv run dbt build --target "$DBT_TARGET"
+
+      - name: Stage artifacts
+        run: |
+          mkdir -p dbt_artifacts
+          cp target/manifest.json dbt_artifacts/manifest.json
+          cp database/database.duckdb dbt_artifacts/database.duckdb
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-artifacts
+          path: dbt_artifacts/
+          if-no-files-found: error
+          retention-days: 30

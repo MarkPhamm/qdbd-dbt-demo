@@ -1,0 +1,50 @@
+# release-cd-dbt. Push to main.
+# Build production (split schemas) and save the files the next pull request
+# into main needs.
+
+name: release-cd-dbt
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release-cd-dbt-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  dbt:
+    runs-on: ubuntu-latest
+    env:
+      DBT_PROFILES_DIR: .
+      DBT_TARGET: prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.12"
+
+      - name: Install the locked dbt
+        run: |
+          uv sync --frozen
+          uv run dbt deps
+
+      - name: Build prod
+        run: uv run dbt build --target "$DBT_TARGET"
+
+      - name: Stage artifacts
+        run: |
+          mkdir -p dbt_artifacts
+          cp target/manifest.json dbt_artifacts/manifest.json
+          cp database/database.duckdb dbt_artifacts/database.duckdb
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-artifacts
+          path: dbt_artifacts/
+          if-no-files-found: error
+          retention-days: 30

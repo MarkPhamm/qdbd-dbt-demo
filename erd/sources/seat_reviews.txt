@@ -1,0 +1,28 @@
+"skytrax_raw.seat_reviews" as seat_reviews
+----
+review_id PK int
+airline_id int FK >- airlines.airline_id
+type_of_traveller string
+seat_type string
+aircraft_type string
+seat_layout string
+verify boolean
+date_submitted date
+date_flown date
+customer_name string
+nationality string
+seat_legroom decimal(3,1)
+seat_recline decimal(3,1)
+seat_width decimal(3,1)
+aisle_space decimal(3,1)
+seat_storage decimal(3,1)
+power_supply decimal(3,1)
+viewing_tv_screen decimal(3,1)
+sleep_comfort decimal(3,1)
+sitting_comfort decimal(3,1)
+seat_bed_width decimal(3,1)
+seat_bed_length decimal(3,1)
+seat_privacy decimal(3,1)
+recommended boolean
+review string
+updated_at timestamp

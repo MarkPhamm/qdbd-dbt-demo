@@ -1,0 +1,31 @@
+# feature-cd-qdbd. A pull request into dev or qa.
+# One comment, updated on later pushes, with a section per diagram, plus the
+# coloured HTML as the erd artifact. The diff base is the pull request target.
+
+name: feature-cd-qdbd
+
+on:
+  pull_request:
+    branches: [dev, qa]
+
+concurrency:
+  group: feature-cd-qdbd-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  qdbd:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: MarkPhamm/quickdbd-cli@v0.6.11
+        with:
+          path: erd/models erd/sources
+          site: site/
+          strict: "true"
+          comment: "true"
+          upload-artifact: "true"
+          qdbd-version: "0.6.11"

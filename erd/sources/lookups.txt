@@ -1,0 +1,16 @@
+# The Skytrax extracts, before staging. Columns are the CSV headers. Descriptions
+# come from models/staging/_skytrax__sources.yml through the line below. It
+# covers every file under erd/sources/, because `qdbd check erd/sources`
+# compiles them as one schema. The path is relative to this file: ../.. is the
+# repo root. One file per extract so `qdbd build --by-group` shades each one.
+# @dbt: ../..
+
+"skytrax_raw.airlines" as airlines
+----
+airline_id PK int
+airline_name string
+
+"skytrax_raw.airports" as airports
+----
+airport_id PK int
+airport_name string

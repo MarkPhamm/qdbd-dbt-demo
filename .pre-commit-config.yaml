@@ -1,0 +1,9 @@
+repos:
+  - repo: https://github.com/MarkPhamm/quickdbd-cli
+    rev: v0.6.11
+    hooks:
+      - id: qdbd-check
+        # Two diagrams. Pass each root: a glob of erd/*/ would split the star
+        # schemas apart and break their foreign keys.
+        args: [--each, --strict, erd/models, erd/sources]
+        pass_filenames: false

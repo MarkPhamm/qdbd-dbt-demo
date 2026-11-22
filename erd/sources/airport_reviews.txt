@@ -1,0 +1,22 @@
+"skytrax_raw.airport_reviews" as airport_reviews
+----
+review_id PK int
+airport_id int FK >- airports.airport_id
+verify boolean
+date_submitted date
+date_visit date
+customer_name string
+nationality string
+experience_at_airport string
+type_of_traveller string
+queuing_times decimal(3,1)
+terminal_cleanliness decimal(3,1)
+terminal_seating decimal(3,1)
+terminal_signs decimal(3,1)
+food_beverages decimal(3,1)
+airport_shopping decimal(3,1)
+airport_staff decimal(3,1)
+wifi_connectivity decimal(3,1)
+recommended boolean
+review string
+updated_at timestamp

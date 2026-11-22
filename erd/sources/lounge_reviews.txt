@@ -1,0 +1,23 @@
+"skytrax_raw.lounge_reviews" as lounge_reviews
+----
+review_id PK int
+airline_id int FK >- airlines.airline_id
+lounge_name string
+airport string
+type_of_lounge string
+type_of_traveller string
+verify boolean
+date_submitted date
+date_visit date
+customer_name string
+nationality string
+comfort decimal(3,1)
+cleanliness decimal(3,1)
+bar_and_beverages decimal(3,1)
+catering decimal(3,1)
+washrooms decimal(3,1)
+wifi_connectivity decimal(3,1)
+staff_service decimal(3,1)
+recommended boolean
+review string
+updated_at timestamp

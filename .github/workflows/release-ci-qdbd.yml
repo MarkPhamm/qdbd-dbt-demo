@@ -1,0 +1,31 @@
+# release-ci-qdbd. A pull request into main.
+# Same preview as feature-cd-qdbd: a comment with one section per diagram,
+# and the coloured HTML as the erd artifact. The diff base is main.
+
+name: release-ci-qdbd
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: release-ci-qdbd-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  qdbd:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: MarkPhamm/quickdbd-cli@v0.6.11
+        with:
+          path: erd/models erd/sources
+          site: site/
+          strict: "true"
+          comment: "true"
+          upload-artifact: "true"
+          qdbd-version: "0.6.11"

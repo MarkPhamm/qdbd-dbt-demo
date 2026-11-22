@@ -1,0 +1,31 @@
+# feature-ci-qdbd. A pull request into dev or qa.
+# Check only: fail when either diagram disagrees with the yml. The comment
+# and the coloured artifact are feature-cd-qdbd.yml.
+# --each is required. The GitHub Action adds it only when site is set, and a
+# check without it would compile both roots as one schema.
+
+name: feature-ci-qdbd
+
+on:
+  pull_request:
+    branches: [dev, qa]
+
+concurrency:
+  group: feature-ci-qdbd-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  qdbd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Check both diagrams
+        run: uvx --from "quickdbd-cli==0.6.11" qdbd check --each --strict erd/models erd/sources

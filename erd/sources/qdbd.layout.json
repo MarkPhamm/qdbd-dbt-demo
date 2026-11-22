@@ -1,0 +1,29 @@
+{
+  "tables": {
+    "skytrax_raw.airline_reviews": {
+      "x": 0,
+      "y": 0
+    },
+    "skytrax_raw.airlines": {
+      "x": 0,
+      "y": 802
+    },
+    "skytrax_raw.airport_reviews": {
+      "x": 1097,
+      "y": 0
+    },
+    "skytrax_raw.airports": {
+      "x": 194,
+      "y": 800
+    },
+    "skytrax_raw.lounge_reviews": {
+      "x": 733,
+      "y": 0
+    },
+    "skytrax_raw.seat_reviews": {
+      "x": 376,
+      "y": 0
+    }
+  },
+  "version": 1
+}

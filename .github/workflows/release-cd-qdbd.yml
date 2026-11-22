@@ -1,0 +1,28 @@
+# release-cd-qdbd. Push to dev, qa, or main.
+# Check both diagrams. No comment. Pages publishes the branches.
+
+name: release-cd-qdbd
+
+on:
+  push:
+    branches: [dev, qa, main]
+
+concurrency:
+  group: release-cd-qdbd-${{ github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  qdbd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Check both diagrams
+        run: uvx --from "quickdbd-cli==0.6.11" qdbd check --each --strict erd/models erd/sources

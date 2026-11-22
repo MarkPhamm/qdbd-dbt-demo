@@ -1,0 +1,63 @@
+# release-ci-dbt. A pull request into main.
+# Same slim build as feature-ci-dbt, against main's last green release-cd-dbt.
+
+name: release-ci-dbt
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: release-ci-dbt-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  dbt:
+    runs-on: ubuntu-latest
+    env:
+      DBT_PROFILES_DIR: .
+      DBT_CI_SCHEMA: ci_pr_${{ github.event.pull_request.number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: "3.12"
+
+      - name: Install the locked dbt
+        run: |
+          uv sync --frozen
+          uv run dbt deps
+
+      - name: Download the base branch's CD artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE: ${{ github.base_ref }}
+        run: |
+          mkdir -p base_dbt_artifacts database
+          if [ "$BASE" = "main" ]; then WF=release-cd-dbt.yml; else WF=feature-cd-dbt.yml; fi
+          RUN_ID=$(gh run list \
+            --workflow="$WF" \
+            --branch="$BASE" \
+            --status=success \
+            --limit=1 \
+            --json databaseId \
+            --jq '.[0].databaseId')
+          if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
+            echo "No successful $WF run on $BASE yet."
+            echo "Push to $BASE once (or Run workflow on it) so CD can upload artifacts."
+            exit 1
+          fi
+          gh run download "$RUN_ID" --name dbt-artifacts --dir base_dbt_artifacts
+          cp base_dbt_artifacts/database.duckdb database/database.duckdb
+
+      - name: Slim CI
+        run: >
+          uv run dbt build --target ci
+          --select state:modified+
+          --defer --state base_dbt_artifacts/

@@ -1,0 +1,28 @@
+"skytrax_raw.airline_reviews" as airline_reviews
+----
+review_id PK int
+airline_id int FK >- airlines.airline_id
+verify boolean
+date_submitted date
+date_flown date
+customer_name string
+nationality string
+type_of_traveller string
+seat_type string
+aircraft string
+origin_city string
+origin_airport string
+destination_city string
+destination_airport string
+transit_city string
+transit_airport string
+seat_comfort decimal(3,1)
+cabin_staff_service decimal(3,1)
+food_and_beverages decimal(3,1)
+inflight_entertainment decimal(3,1)
+ground_service decimal(3,1)
+wifi_and_connectivity decimal(3,1)
+value_for_money decimal(3,1)
+recommended boolean
+review string
+updated_at timestamp

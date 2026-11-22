@@ -1,24 +1,26 @@
-# Pages — one diagram site per environment.
+# Pages. One site, rebuilt on every deploy so one push never wipes another folder.
 #
-#   /       main, as it is
-#   /qa/    qa,  coloured by what promoting it to main would change
-#   /dev/   dev, coloured by what promoting it to qa would change
+#   /            main, model diagram, built with --by-group
+#   /sources.html
+#   /qa/         qa, coloured against main
+#   /qa/sources.html
+#   /dev/        dev, coloured against qa
+#   /dev/sources.html
+#   /pr/N/       open pull request N, coloured against the branch it merges into
+#   /pr/         list of those pull requests
 #
-# Every deploy rebuilds all three from the committed erd/ on each branch. qdbd
-# reads the model yml next to it, so no dbt is needed here, and one push never
-# wipes the other two folders.
+# A branch that still has the diagram at erd/ (no erd/models/) is built from
+# that folder, so qa and main keep publishing during the promotion.
 #
-# It runs after cd.yml rather than on push. A workflow_run job runs on the
-# default branch, and the github-pages environment only accepts deploys from
-# the default branch unless you widen its rules.
+# workflow_run runs on the default branch. The github-pages environment only
+# accepts deploys from the default branch unless its rules are widened.
 
 name: pages
 
 on:
   workflow_run:
-    workflows: [cd]
+    workflows: [feature-cd-qdbd, release-ci-qdbd, feature-cd-dbt, release-cd-dbt]
     types: [completed]
-    branches: [main, qa, dev]
   workflow_dispatch:
 
 concurrency:
@@ -32,24 +34,76 @@ jobs:
   build:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # --diff-base reads the other branches
+          fetch-depth: 0
 
       - uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.12"
 
-      - name: Build one site per environment
+      - name: Build environment and pull request diagrams
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          qdbd() { uvx --from "quickdbd-cli==0.6.0" qdbd "$@"; }
-          for env in main qa dev; do
-            git worktree add --detach "envs/$env" "origin/$env"
-          done
-          (cd envs/main && qdbd build erd -o "$GITHUB_WORKSPACE/site/index.html")
-          (cd envs/qa && qdbd build erd -o "$GITHUB_WORKSPACE/site/qa/index.html" --diff-base origin/main)
-          (cd envs/dev && qdbd build erd -o "$GITHUB_WORKSPACE/site/dev/index.html" --diff-base origin/qa)
+          set -euo pipefail
+          qdbd() { uvx --from "quickdbd-cli==0.6.11" qdbd "$@"; }
+
+          # --by-group draws one shaded region per file and ignores saved positions.
+          build_tree() {
+            local dir="$1" out="$2"
+            shift 2
+            mkdir -p "$out"
+            if [ -d "$dir/erd/models" ]; then
+              (cd "$dir" && qdbd build --by-group erd/models -o "$out/index.html" "$@")
+              if [ -d "$dir/erd/sources" ]; then
+                (cd "$dir" && qdbd build --by-group erd/sources -o "$out/sources.html" "$@")
+              fi
+            else
+              (cd "$dir" && qdbd build --by-group erd -o "$out/index.html" "$@")
+            fi
+          }
+
+          mkdir -p site/pr envs
+          git fetch --no-tags origin main qa dev
+          git worktree add --detach envs/main origin/main
+          git worktree add --detach envs/qa origin/qa
+          git worktree add --detach envs/dev origin/dev
+          build_tree envs/main "$GITHUB_WORKSPACE/site"
+          build_tree envs/qa "$GITHUB_WORKSPACE/site/qa" --diff-base origin/main
+          build_tree envs/dev "$GITHUB_WORKSPACE/site/dev" --diff-base origin/qa
+
+          : > "$RUNNER_TEMP/pr-lines.html"
+          while IFS=$'\t' read -r num base; do
+            [ -n "${num}" ] || continue
+            [[ "$num" =~ ^[0-9]+$ ]] || continue
+            [[ "$base" =~ ^[A-Za-z0-9._/-]+$ ]] || continue
+            git fetch --no-tags origin "refs/pull/${num}/head"
+            git worktree add --detach "envs/pr-${num}" FETCH_HEAD
+            git fetch --no-tags origin "+refs/heads/${base}:refs/remotes/origin/${base}"
+            if build_tree "envs/pr-${num}" "$GITHUB_WORKSPACE/site/pr/${num}" --diff-base "origin/${base}"; then
+              printf '<li><a href="%s/">%s</a> against %s</li>\n' "$num" "$num" "$base" >> "$RUNNER_TEMP/pr-lines.html"
+            else
+              printf '<li>%s against %s failed the schema check</li>\n' "$num" "$base" >> "$RUNNER_TEMP/pr-lines.html"
+            fi
+          done < <(gh pr list --state open --limit 100 --json number,baseRefName --jq '.[] | [.number, .baseRefName] | @tsv')
+
+          cat > site/pr/index.html << EOF
+          <!DOCTYPE html>
+          <html lang="en">
+          <head><meta charset="utf-8"><title>Pull request diagrams</title></head>
+          <body>
+          <h1>Pull request diagrams</h1>
+          <ul>
+          $(cat "$RUNNER_TEMP/pr-lines.html")
+          </ul>
+          </body>
+          </html>
+          EOF
 
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -61,9 +115,35 @@ jobs:
     permissions:
       pages: write
       id-token: write
+      pull-requests: write
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - id: deploy
         uses: actions/deploy-pages@v4
+
+      - name: Comment the diagram link
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          PAGE_URL: ${{ steps.deploy.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          n=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" --jq '.pull_requests[0].number // empty')
+          if [ -z "$n" ]; then
+            echo "No pull request number on the triggering run."
+            exit 0
+          fi
+          marker="<!-- qdbd-pr-demo -->"
+          body=$(printf '%s\nModel diagram: %s/pr/%s/\nSource diagram: %s/pr/%s/sources.html\n' \
+            "$marker" "${PAGE_URL%/}" "$n" "${PAGE_URL%/}" "$n")
+          ids=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${n}/comments" --paginate \
+            --jq ".[] | select(.body | startswith(\"${marker}\")) | .id")
+          id=${ids%%$'\n'*}
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${id}" -f body="$body" >/dev/null
+          else
+            gh api "repos/${GITHUB_REPOSITORY}/issues/${n}/comments" -f body="$body" >/dev/null
+          fi
