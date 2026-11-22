@@ -2,7 +2,7 @@
 
 A working demo of [qdbd](https://qdbd.dev/) on a real dbt project. Four star schemas on DuckDB, two hand-written diagrams, and a `# @dbt:` line in each that pulls descriptions, tags and column types straight from the dbt yml. CI checks both diagrams against the yml, every pull request gets a schema diff, and each environment publishes its own pages.
 
-**Live diagrams:** [all](https://markphamm.github.io/qdbd-dbt-demo/) · [production model](https://markphamm.github.io/qdbd-dbt-demo/model.html) · [sources](https://markphamm.github.io/qdbd-dbt-demo/sources.html) · [qa](https://markphamm.github.io/qdbd-dbt-demo/qa/) · [dev](https://markphamm.github.io/qdbd-dbt-demo/dev/)
+**Live diagrams:** [production model](https://markphamm.github.io/qdbd-dbt-demo/model.html) · [production source](https://markphamm.github.io/qdbd-dbt-demo/sources.html) · [qa model](https://markphamm.github.io/qdbd-dbt-demo/qa/) · [qa source](https://markphamm.github.io/qdbd-dbt-demo/qa/sources.html) · [dev model](https://markphamm.github.io/qdbd-dbt-demo/dev/) · [dev source](https://markphamm.github.io/qdbd-dbt-demo/dev/sources.html)
 
 [![The production model diagram in qdbd: four star schemas in shaded regions around the conformed dimensions](docs/images/qdbd-overview.png)](https://markphamm.github.io/qdbd-dbt-demo/model.html)
 
