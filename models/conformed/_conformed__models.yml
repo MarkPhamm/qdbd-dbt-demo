@@ -65,6 +65,9 @@ models:
       - name: latest_review_date
         description: Latest date_submitted for this reviewer, across all subjects.
         data_type: date
+      - name: country_id
+        description: FK to dim_country.
+        data_type: bigint
 
   - name: dim_cabin
     description: "Conformed cabin dimension. Grain: one row per cabin across airline and seat reviews."
@@ -147,4 +150,36 @@ models:
       - name: is_mobile
         description: True when the channel is a phone app.
         data_type: boolean
+        data_tests: [not_null]
+
+  - name: dim_country
+    description: "Conformed country dimension. Grain: one row per reviewer country."
+    columns:
+      - name: country_id
+        description: Primary key.
+        data_type: bigint
+        data_tests: [unique, not_null]
+      - name: country_name
+        description: Country name.
+        data_type: varchar
+        data_tests: [not_null]
+      - name: region_name
+        description: World region the country sits in.
+        data_type: varchar
+        data_tests: [not_null]
+
+  - name: dim_trip_purpose
+    description: "Why the reviewer travelled. Grain: one row per purpose."
+    columns:
+      - name: trip_purpose_id
+        description: Primary key.
+        data_type: bigint
+        data_tests: [unique, not_null]
+      - name: purpose_name
+        description: Holiday, Visiting family, Business meeting, Crew layover, or unknown.
+        data_type: varchar
+        data_tests: [not_null]
+      - name: purpose_group
+        description: leisure, work, or unknown.
+        data_type: varchar
         data_tests: [not_null]

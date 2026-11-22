@@ -15,6 +15,10 @@ review_channel_id FK >- dim_review_channel.review_channel_id
 review_language
 submission_device
 helpful_votes
+trip_purpose_id FK >- dim_trip_purpose.trip_purpose_id
+party_size
+nights_away
+would_return
 seat_legroom
 seat_recline
 seat_width
