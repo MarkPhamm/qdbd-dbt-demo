@@ -11,6 +11,11 @@ transit_location_id FK >- dim_location.location_id
 route_id FK >- dim_route.route_id
 aircraft_id FK >- dim_aircraft.aircraft_id
 cabin_id FK >- dim_cabin.cabin_id
+disruption_id FK >- dim_disruption.disruption_id
+delay_minutes
+missed_connection
+boarding_rating
+arrival_rating
 is_verified
 type_of_traveller
 traveller_type_id FK >- dim_traveller_type.traveller_type_id
@@ -48,3 +53,12 @@ dim_route
 route_id PK
 origin_location_id FK >- dim_location.location_id
 destination_location_id FK >- dim_location.location_id
+distance_km
+is_international
+typical_duration_minutes
+
+dim_disruption
+-
+disruption_id PK
+disruption_name
+disruption_severity
