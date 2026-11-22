@@ -8,7 +8,7 @@
 #   /dev/sources.html
 #   /pr/N/       that pull request's model diagram, coloured against its base
 #   /pr/N/sources.html
-#   /pr/         list of those pull requests
+#   /diagrams.html   main, qa, dev, and every open pull request, each with its diagrams
 #
 # Model and source are always two builds. qdbd build erd would compile both
 # into one schema. A branch that still has the diagram directly under erd/
@@ -55,26 +55,75 @@ jobs:
           set -euo pipefail
           qdbd() { uvx --from "quickdbd-cli==0.6.11" qdbd "$@"; }
 
-          # --by-group draws one shaded region per file. One root per call, so
-          # the model page never contains the source tables.
+          # One root per build, so model and source never share a canvas.
+          # models is index.html (the URL of that environment). Every other
+          # folder under erd/ becomes <name>.html, so a third diagram is just
+          # another folder.
+          manifest="$RUNNER_TEMP/diagrams.tsv"
+          : > "$manifest"
+
+          label_of() {
+            case $(basename "$1") in
+              models|erd) printf 'model' ;;
+              *) basename "$1" ;;
+            esac
+          }
+
+          file_of() {
+            case $(basename "$1") in
+              models|erd) printf 'index.html' ;;
+              *) printf '%s.html' "$(basename "$1")" ;;
+            esac
+          }
+
+          record() {
+            printf '%s\t%s\t%s\t%s\t%s\n' "$@" >> "$manifest"
+          }
+
           build_root() {
             local dir="$1" root="$2" dest="$3"
             shift 3
-            (cd "$dir" && qdbd build --by-group "$root" -o "$dest" "$@")
+            local log code=0
+            log=$(cd "$dir" && qdbd build --by-group "$root" -o "$dest" "$@") || code=$?
+            printf '%s\n' "$log"
+            BUILT_SUMMARY=$(printf '%s\n' "$log" | sed -n 's/^Wrote .* (\(.*\))$/\1/p' | tail -1)
+            return "$code"
+          }
+
+          roots_of() {
+            local dir="$1" d name
+            if [ -d "$dir/erd/models" ] || [ -d "$dir/erd/sources" ]; then
+              find "$dir/erd" -mindepth 1 -maxdepth 1 -type d | sort | while read -r d; do
+                if find "$d" -type f \( -name '*.txt' -o -name '*.dbml' \) | grep -q .; then
+                  name=$(basename "$d")
+                  printf 'erd/%s\n' "$name"
+                fi
+              done
+            elif [ -d "$dir/erd" ]; then
+              printf 'erd\n'
+            fi
           }
 
           build_tree() {
-            local dir="$1" out="$2"
-            shift 2
+            local dir="$1" out="$2" group="$3" title="$4" prefix="$5"
+            shift 5
+            local root label file href
             mkdir -p "$out"
-            if [ -d "$dir/erd/models" ]; then
-              build_root "$dir" erd/models "$out/index.html" "$@"
-              if [ -d "$dir/erd/sources" ]; then
-                build_root "$dir" erd/sources "$out/sources.html" "$@"
+            while read -r root; do
+              [ -n "$root" ] || continue
+              label=$(label_of "$root")
+              file=$(file_of "$root")
+              if [ "$file" = index.html ]; then
+                href="${prefix:-index.html}"
+              else
+                href="${prefix}${file}"
               fi
-            else
-              build_root "$dir" erd "$out/index.html" "$@"
-            fi
+              if build_root "$dir" "$root" "$out/$file" "$@"; then
+                record "$group" "$title" "$label" "$href" "$BUILT_SUMMARY"
+              else
+                return 1
+              fi
+            done < <(roots_of "$dir" | awk '{ key = ($0 ~ /(^|\/)models$/ || $0 == "erd") ? "0" : "1"; print key "\t" $0 }' | sort | cut -f2-)
           }
 
           mkdir -p site/pr envs
@@ -82,11 +131,10 @@ jobs:
           git worktree add --detach envs/main origin/main
           git worktree add --detach envs/qa origin/qa
           git worktree add --detach envs/dev origin/dev
-          build_tree envs/main "$GITHUB_WORKSPACE/site"
-          build_tree envs/qa "$GITHUB_WORKSPACE/site/qa"
-          build_tree envs/dev "$GITHUB_WORKSPACE/site/dev"
+          build_tree envs/main "$GITHUB_WORKSPACE/site" env main ""
+          build_tree envs/qa "$GITHUB_WORKSPACE/site/qa" env qa "qa/"
+          build_tree envs/dev "$GITHUB_WORKSPACE/site/dev" env dev "dev/"
 
-          : > "$RUNNER_TEMP/pr-lines.html"
           while IFS=$'\t' read -r num base; do
             [ -n "${num}" ] || continue
             [[ "$num" =~ ^[0-9]+$ ]] || continue
@@ -94,25 +142,91 @@ jobs:
             git fetch --no-tags origin "refs/pull/${num}/head"
             git worktree add --detach "envs/pr-${num}" FETCH_HEAD
             git fetch --no-tags origin "+refs/heads/${base}:refs/remotes/origin/${base}"
-            if build_tree "envs/pr-${num}" "$GITHUB_WORKSPACE/site/pr/${num}" --diff-base "origin/${base}"; then
-              printf '<li><a href="%s/">%s</a> against %s</li>\n' "$num" "$num" "$base" >> "$RUNNER_TEMP/pr-lines.html"
-            else
-              printf '<li>%s against %s failed the schema check</li>\n' "$num" "$base" >> "$RUNNER_TEMP/pr-lines.html"
+            if ! build_tree "envs/pr-${num}" "$GITHUB_WORKSPACE/site/pr/${num}" pr "$num against $base" "pr/${num}/" --diff-base "origin/${base}"; then
+              record pr "$num against $base" "" "" "schema check failed"
             fi
           done < <(gh pr list --state open --limit 100 --json number,baseRefName --jq '.[] | [.number, .baseRefName] | @tsv')
 
-          cat > site/pr/index.html << EOF
-          <!DOCTYPE html>
-          <html lang="en">
-          <head><meta charset="utf-8"><title>Pull request diagrams</title></head>
-          <body>
-          <h1>Pull request diagrams</h1>
-          <ul>
-          $(cat "$RUNNER_TEMP/pr-lines.html")
-          </ul>
-          </body>
-          </html>
-          EOF
+          python3 - "$manifest" site/diagrams.html site/pr/index.html << 'PY'
+          import html, sys
+          from pathlib import Path
+
+          rows = []
+          for line in Path(sys.argv[1]).read_text().splitlines():
+              if not line.strip():
+                  continue
+              group, title, label, href, summary = line.split("\t")
+              rows.append((group, title, label, href, summary))
+
+          def section(title, items, prefix):
+              body = []
+              for label, href, summary in items:
+                  if href:
+                      link = html.escape(prefix + href, quote=True)
+                      name = html.escape(label)
+                      meta = html.escape(summary)
+                      body.append(
+                          f'<li><a href="{link}">{name}</a><span>{meta}</span></li>'
+                      )
+                  else:
+                      body.append(f'<li><span>{html.escape(summary)}</span></li>')
+              return (
+                  f'<section><h2>{html.escape(title)}</h2><ul>'
+                  + "".join(body)
+                  + "</ul></section>"
+              )
+
+          def page(prefix):
+              envs, prs = [], []
+              seen = []
+              for group, title, label, href, summary in rows:
+                  key = (group, title)
+                  if key not in seen:
+                      seen.append(key)
+                  bucket = envs if group == "env" else prs
+                  bucket.append((title, label, href, summary))
+              parts = []
+              for title in ("main", "qa", "dev"):
+                  items = [(l, h, s) for t, l, h, s in envs if t == title]
+                  if items:
+                      parts.append(section(title, items, prefix))
+              if prs:
+                  parts.append('<h2 class="prs">Pull requests</h2>')
+                  titles = []
+                  for title, _, _, _ in prs:
+                      if title not in titles:
+                          titles.append(title)
+                  for title in titles:
+                      items = [(l, h, s) for t, l, h, s in prs if t == title and l]
+                      if not items:
+                          items = [("", "", s) for t, l, h, s in prs if t == title]
+                      parts.append(section(title, items, prefix))
+              css = (
+                  ":root{color-scheme:light dark;--fg:#1f2328;--muted:#656d76;--bg:#fff;--line:#d0d7de}"
+                  "@media (prefers-color-scheme:dark){:root{--fg:#e6edf3;--muted:#8d96a0;--bg:#0d1117;--line:#30363d}}"
+                  "body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,sans-serif}"
+                  "main{max-width:40rem;margin:0 auto;padding:2rem 1.25rem 4rem}"
+                  "h1{font-size:1.35rem;font-weight:600;margin:0 0 1.5rem}"
+                  "h2{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:1.4rem 0 .35rem;font-weight:600}"
+                  "h2.prs{margin-top:2rem}"
+                  "ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}"
+                  "li{display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--line)}"
+                  "a{color:inherit;font-weight:600;text-decoration:none;padding:.65rem 0}"
+                  "span{color:var(--muted);padding:.65rem 0}"
+              )
+              return (
+                  "<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\">"
+                  "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+                  f"<title>Diagrams</title><style>{css}</style></head><body><main>"
+                  "<h1>Diagrams</h1>"
+                  + "".join(parts)
+                  + "</main></body></html>\n"
+              )
+
+          Path(sys.argv[2]).write_text(page(""), encoding="utf-8")
+          Path(sys.argv[3]).parent.mkdir(parents=True, exist_ok=True)
+          Path(sys.argv[3]).write_text(page("../"), encoding="utf-8")
+          PY
 
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -146,8 +260,8 @@ jobs:
             exit 0
           fi
           marker="<!-- qdbd-pr-demo -->"
-          body=$(printf '%s\nModel diagram: %s/pr/%s/\nSource diagram: %s/pr/%s/sources.html\n' \
-            "$marker" "${PAGE_URL%/}" "$n" "${PAGE_URL%/}" "$n")
+          body=$(printf '%s\nModel diagram: %s/pr/%s/\nSource diagram: %s/pr/%s/sources.html\nAll diagrams: %s/diagrams.html\n' \
+            "$marker" "${PAGE_URL%/}" "$n" "${PAGE_URL%/}" "$n" "${PAGE_URL%/}")
           ids=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${n}/comments" --paginate \
             --jq ".[] | select(.body | startswith(\"${marker}\")) | .id")
           id=${ids%%$'\n'*}
