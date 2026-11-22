@@ -88,7 +88,7 @@ erd/sources/        the source diagram, one file per extract, compiled as one sc
 scripts/sample_raw.py  rebuilds data/raw/ from a skytrax_reviews_data checkout
 ```
 
-Each star schema is a folder straight under `models/`, so it is also a schema in prod (`conformed`, `lounge_reviews`, ...). [GLOSSARY.md](GLOSSARY.md) defines review, reviewer, rating band and the rest.
+Each star schema is a folder straight under `models/`, so it is also a schema in prod (`conformed`, `lounge_reviews`, ...). [GLOSSARY.md](docs/GLOSSARY.md) defines review, reviewer, rating band and the rest.
 
 ## Data model
 
