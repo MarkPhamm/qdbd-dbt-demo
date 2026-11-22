@@ -28,6 +28,7 @@ lounge_review_count
 seat_review_count
 first_review_date
 latest_review_date
+country_id FK >- dim_country.country_id
 
 dim_cabin
 -
@@ -58,3 +59,15 @@ dim_review_channel
 review_channel_id PK
 channel_name
 is_mobile
+
+dim_country
+-
+country_id PK
+country_name
+region_name
+
+dim_trip_purpose
+-
+trip_purpose_id PK
+purpose_name
+purpose_group

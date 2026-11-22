@@ -131,6 +131,18 @@ models:
       - name: helpful_votes
         description: Readers who marked the review helpful.
         data_type: bigint
+      - name: trip_purpose_id
+        description: FK to dim_trip_purpose.
+        data_type: bigint
+      - name: party_size
+        description: People travelling with the reviewer, including the reviewer.
+        data_type: bigint
+      - name: nights_away
+        description: Nights between departure and return.
+        data_type: bigint
+      - name: would_return
+        description: Whether the reviewer would make the same trip again.
+        data_type: boolean
       - name: source_updated_at
         data_type: timestamp
         data_tests: [not_null]
