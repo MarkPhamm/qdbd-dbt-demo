@@ -4,6 +4,11 @@ review_id PK
 airline_id FK >- dim_airline.airline_id
 aircraft_id FK >- dim_aircraft.aircraft_id
 seat_configuration_id FK >- dim_seat_configuration.seat_configuration_id
+lie_flat
+pitch_inches
+width_inches
+privacy_rating
+power_rating
 cabin_id FK >- dim_cabin.cabin_id
 customer_id FK >- dim_customer.customer_id
 date_submitted_id FK >- dim_date.date_id
@@ -44,3 +49,7 @@ seat_configuration_id PK
 seat_type
 seat_layout
 seats_per_row
+pitch_inches
+width_inches
+is_lie_flat
+has_direct_aisle
