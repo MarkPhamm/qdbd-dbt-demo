@@ -77,6 +77,37 @@ jobs:
             esac
           }
 
+          # qdbd names the browser tab after the folder, so every model page
+          # would say "models". Say which branch or pull request it is.
+          describe() {
+            local where="$1" kind="$2" noun
+            case "$kind" in
+              model) noun="model diagram" ;;
+              sources) noun="source diagram" ;;
+              *) noun="$kind diagram" ;;
+            esac
+            case "$where" in
+              main) printf 'Main %s' "$noun" ;;
+              qa|dev) printf '%s %s' "$where" "$noun" ;;
+              *) printf 'Pull request %s, %s' "$where" "$noun" ;;
+            esac
+          }
+
+          cat > "$RUNNER_TEMP/retitle.py" << 'PY'
+          import html, json, pathlib, re, sys
+          path, title = sys.argv[1], sys.argv[2]
+          file = pathlib.Path(path)
+          text = file.read_text(encoding="utf-8")
+          text = re.sub(r"<title>.*?</title>", "<title>" + html.escape(title) + "</title>", text, count=1)
+          text = re.sub(
+              r'("title"\s*:\s*)"(?:\\.|[^"\\])*"',
+              lambda m: m.group(1) + json.dumps(title),
+              text,
+              count=1,
+          )
+          file.write_text(text, encoding="utf-8")
+          PY
+
           record() {
             printf '%s\t%s\t%s\t%s\t%s\n' "$@" >> "$manifest"
           }
@@ -123,7 +154,9 @@ jobs:
                 href="${prefix}${file}"
               fi
               if build_root "$dir" "$root" "$out/$file" "$@"; then
-                record "$group" "$title" "$label" "$href" "$BUILT_SUMMARY"
+                name=$(describe "$title" "$label")
+                python3 "$RUNNER_TEMP/retitle.py" "$out/$file" "$name"
+                record "$group" "$title" "$name" "$href" "$BUILT_SUMMARY"
               else
                 return 1
               fi
