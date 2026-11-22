@@ -2,9 +2,9 @@
 
 A working demo of [qdbd](https://qdbd.dev/) on a real dbt project. Four star schemas on DuckDB, two hand-written diagrams, and a `# @dbt:` line in each that pulls descriptions, tags and column types straight from the dbt yml. CI checks both diagrams against the yml, every pull request gets a schema diff, and each environment publishes its own pages.
 
-**Live diagrams:** [all](https://markphamm.github.io/qdbd-dbt-demo/diagrams.html) · [production](https://markphamm.github.io/qdbd-dbt-demo/) · [sources](https://markphamm.github.io/qdbd-dbt-demo/sources.html) · [qa](https://markphamm.github.io/qdbd-dbt-demo/qa/) · [dev](https://markphamm.github.io/qdbd-dbt-demo/dev/)
+**Live diagrams:** [all](https://markphamm.github.io/qdbd-dbt-demo/) · [production model](https://markphamm.github.io/qdbd-dbt-demo/model.html) · [sources](https://markphamm.github.io/qdbd-dbt-demo/sources.html) · [qa](https://markphamm.github.io/qdbd-dbt-demo/qa/) · [dev](https://markphamm.github.io/qdbd-dbt-demo/dev/)
 
-[![The production model diagram in qdbd: four star schemas in shaded regions around the conformed dimensions](docs/images/qdbd-overview.png)](https://markphamm.github.io/qdbd-dbt-demo/)
+[![The production model diagram in qdbd: four star schemas in shaded regions around the conformed dimensions](docs/images/qdbd-overview.png)](https://markphamm.github.io/qdbd-dbt-demo/model.html)
 
 _The production model diagram, built with `--by-group`: one shaded region per file under `erd/models/`, mirroring the folders under `models/`. Click any table for its dbt descriptions, types, tags and relationships._
 
@@ -47,7 +47,7 @@ What that gives this repo:
 
 ### The yml, in the diagram
 
-[![dim_customer in qdbd, filtered to tag:pii, with its dbt descriptions, pii tags and column types in the detail panel](docs/images/qdbd-dbt-metadata.png)](https://markphamm.github.io/qdbd-dbt-demo/#f=tag%3Apii&t=dim_customer&z=1.5&c=810%2C1140)
+[![dim_customer in qdbd, filtered to tag:pii, with its dbt descriptions, pii tags and column types in the detail panel](docs/images/qdbd-dbt-metadata.png)](https://markphamm.github.io/qdbd-dbt-demo/model.html#f=tag%3Apii&t=dim_customer&z=1.5&c=810%2C1140)
 
 In the Filter box, `tag:pii` narrows 13 tables to `dim_customer`. Its table description, all ten column descriptions and the `varchar`/`bigint` types come from `models/conformed/_conformed__models.yml` and the `{% docs %}` blocks in `models/docs.md`. The `pii` tags tint `customer_name` and `nationality`; the same tags are what the filter matches.
 
@@ -55,7 +55,7 @@ In the Filter box, `tag:pii` narrows 13 tables to `dim_customer`. Its table desc
 
 [![fct_airline_review selected, marked CHANGED, with + cabin_id and - seat_type in the detail panel, and dim_cabin marked NEW](docs/images/qdbd-diff.png)](https://markphamm.github.io/qdbd-dbt-demo/pr/)
 
-The colouring is the pull request, not the environment page. `/`, `/qa/`, and `/dev/` each publish that branch's own model diagram, and `sources.html` beside each publishes that branch's own source diagram. A pull request into `main` is coloured against `main`, one into `qa` against `qa`, and one into `dev` against `dev`. The comment links `/pr/N/` for the model diagram and `/pr/N/sources.html` for the source diagram. In this shot, `dim_cabin` is green (new) and `fct_airline_review` is amber (changed).
+The colouring is the pull request, not the environment page. `/` is the directory of every diagram. Main's model is `/model.html` and its sources are `/sources.html`. `/qa/` and `/dev/` are those branches' own model diagrams, with `sources.html` beside each. A pull request into `main` is coloured against `main`, one into `qa` against `qa`, and one into `dev` against `dev`. The comment links `/pr/N/` for the model diagram and `/pr/N/sources.html` for the source diagram. In this shot, `dim_cabin` is green (new) and `fct_airline_review` is amber (changed).
 
 ## Setup
 
@@ -208,7 +208,7 @@ Changes move `feature → dev → qa → main`, one pull request per hop.
 
 | Branch | Ahead of the next one by | Pages |
 |---|---|---|
-| `main` | (production) | [`/`](https://markphamm.github.io/qdbd-dbt-demo/) and [`/sources.html`](https://markphamm.github.io/qdbd-dbt-demo/sources.html) |
+| `main` | (production) | [`/`](https://markphamm.github.io/qdbd-dbt-demo/) lists every diagram. The model is [`/model.html`](https://markphamm.github.io/qdbd-dbt-demo/model.html) and the sources are [`/sources.html`](https://markphamm.github.io/qdbd-dbt-demo/sources.html) |
 | `qa` | `dim_cabin`, a conformed dimension, with `cabin_id` on the airline and seat facts | [`/qa/`](https://markphamm.github.io/qdbd-dbt-demo/qa/) and [`/qa/sources.html`](https://markphamm.github.io/qdbd-dbt-demo/qa/sources.html), qa's own diagrams |
 | `dev` | `dim_route` built as a model, with `route_id` on `fct_airline_review` | [`/dev/`](https://markphamm.github.io/qdbd-dbt-demo/dev/) and [`/dev/sources.html`](https://markphamm.github.io/qdbd-dbt-demo/dev/sources.html), dev's own diagrams |
 
@@ -254,7 +254,7 @@ A pull request into `dev` or `qa` runs three jobs. A pull request into `main` ru
 | `release-cd-qdbd` | push to `dev`, `qa`, or `main` | the same strict qdbd check. No comment |
 | `pages` | after `feature-cd-qdbd`, `release-ci-qdbd`, `feature-cd-dbt`, or `release-cd-dbt` | rebuild `/`, `/qa/`, `/dev/`, and `/pr/N/` with `qdbd build --by-group`, then deploy |
 
-`/`, `/qa/`, and `/dev/` are each that branch's own model diagram (`index.html`). `sources.html` beside each is that branch's own source diagram. Neither page is coloured against another branch. `/pr/N/` is the pull request's model diagram coloured against its base, and `/pr/N/sources.html` is the source diagram coloured the same way. `qdbd build --site` is not used: it would replace `index.html` with a link page, and `qdbd build erd` would draw model and source on one canvas.
+`/` lists main, qa, dev, and every open pull request. Main's model is `/model.html`. `/qa/` and `/dev/` are those branches' own model diagrams. `sources.html` beside each is that branch's own source diagram. Neither environment page is coloured against another branch. `/pr/N/` is the pull request's model diagram coloured against its base, and `/pr/N/sources.html` is the source diagram coloured the same way. `qdbd build --site` is not used for these pages: it would replace the directory with a flat list, and `qdbd build erd` would draw model and source on one canvas.
 
 [![The qdbd comment on the qa to main pull request, from before the diagrams were split: 1 table added, 2 changed, 2 relationships added](docs/images/qdbd-pr-comment.png)](https://github.com/MarkPhamm/qdbd-dbt-demo/pull/2)
 
@@ -323,7 +323,7 @@ git checkout dev && git merge qa && git push
 - **Slim CI defers to the base branch, not to prod.** A pull request into `qa` is checked against what `qa` already has. `feature-cd-dbt` and `release-cd-dbt` upload under the same artifact name, and the dbt CI workflows pick the file that matches the base branch.
 - **The qdbd check shares nothing with slim CI.** The yml link needs no build, so the diagram check stays green even when no dbt CD has run yet.
 - **`pages` runs after the preview and the dbt CD, not on every push.** A `workflow_run` job runs on the default branch, and the `github-pages` environment only accepts deploys from the default branch. Every deploy rebuilds every folder, so a push to `dev` never wipes `/qa/`.
-- **Pages uses `--by-group`.** Each file is a shaded region. Saved positions in `qdbd.layout.json` are for `qdbd serve`. The published page lays the groups out fresh. `/`, `/qa/`, and `/dev/` are those branches as committed. Only `/pr/N/` is coloured, against the branch that pull request merges into.
+- **Pages uses `--by-group`.** Each file is a shaded region. Saved positions in `qdbd.layout.json` are for `qdbd serve`. The published page lays the groups out fresh. `/` is the directory. `/model.html`, `/qa/`, and `/dev/` are those branches' model diagrams as committed. Only `/pr/N/` is coloured, against the branch that pull request merges into.
 - **One DuckDB file per run.** CI downloads the base branch's `database.duckdb` and writes into its own `ci_pr_<n>` schema in that copy. Nothing it does reaches an environment.
 
 ### On a real warehouse

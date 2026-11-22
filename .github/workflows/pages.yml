@@ -1,14 +1,15 @@
 # Pages. One site, rebuilt on every deploy so one push never wipes another folder.
 #
-#   /            main's own model diagram
-#   /sources.html
-#   /qa/         qa's own model diagram, not a diff against main
+#   /                this directory: main, qa, dev, and every open pull request
+#   /model.html      main's own model diagram
+#   /sources.html    main's own source diagram
+#   /qa/             qa's own model diagram, not a diff against main
 #   /qa/sources.html
-#   /dev/        dev's own model diagram, not a diff against qa
+#   /dev/            dev's own model diagram, not a diff against qa
 #   /dev/sources.html
-#   /pr/N/       that pull request's model diagram, coloured against its base
+#   /pr/N/           that pull request's model diagram, coloured against its base
 #   /pr/N/sources.html
-#   /diagrams.html   main, qa, dev, and every open pull request, each with its diagrams
+#   /pr/             the same directory as /
 #
 # Model and source are always two builds. qdbd build erd would compile both
 # into one schema. A branch that still has the diagram directly under erd/
@@ -55,10 +56,10 @@ jobs:
           set -euo pipefail
           qdbd() { uvx --from "quickdbd-cli==0.6.11" qdbd "$@"; }
 
-          # One root per build, so model and source never share a canvas.
-          # models is index.html (the URL of that environment). Every other
-          # folder under erd/ becomes <name>.html, so a third diagram is just
-          # another folder.
+          # models is the model page. At the site root that file is model.html,
+          # because index.html is the directory. Inside qa/, dev/, and pr/N/
+          # the model page is index.html. Every other folder under erd/
+          # becomes <name>.html, so a third diagram is just another folder.
           manifest="$RUNNER_TEMP/diagrams.tsv"
           : > "$manifest"
 
@@ -113,8 +114,11 @@ jobs:
               [ -n "$root" ] || continue
               label=$(label_of "$root")
               file=$(file_of "$root")
+              if [ "$file" = index.html ] && [ -z "$prefix" ]; then
+                file=model.html
+              fi
               if [ "$file" = index.html ]; then
-                href="${prefix:-index.html}"
+                href="${prefix}"
               else
                 href="${prefix}${file}"
               fi
@@ -147,7 +151,7 @@ jobs:
             fi
           done < <(gh pr list --state open --limit 100 --json number,baseRefName --jq '.[] | [.number, .baseRefName] | @tsv')
 
-          python3 - "$manifest" site/diagrams.html site/pr/index.html << 'PY'
+          python3 - "$manifest" site/index.html site/diagrams.html site/pr/index.html << 'PY'
           import html, sys
           from pathlib import Path
 
@@ -224,8 +228,9 @@ jobs:
               )
 
           Path(sys.argv[2]).write_text(page(""), encoding="utf-8")
-          Path(sys.argv[3]).parent.mkdir(parents=True, exist_ok=True)
-          Path(sys.argv[3]).write_text(page("../"), encoding="utf-8")
+          Path(sys.argv[3]).write_text(page(""), encoding="utf-8")
+          Path(sys.argv[4]).parent.mkdir(parents=True, exist_ok=True)
+          Path(sys.argv[4]).write_text(page("../"), encoding="utf-8")
           PY
 
       - uses: actions/upload-pages-artifact@v3
@@ -260,7 +265,7 @@ jobs:
             exit 0
           fi
           marker="<!-- qdbd-pr-demo -->"
-          body=$(printf '%s\nModel diagram: %s/pr/%s/\nSource diagram: %s/pr/%s/sources.html\nAll diagrams: %s/diagrams.html\n' \
+          body=$(printf '%s\nModel diagram: %s/pr/%s/\nSource diagram: %s/pr/%s/sources.html\nAll diagrams: %s/\n' \
             "$marker" "${PAGE_URL%/}" "$n" "${PAGE_URL%/}" "$n" "${PAGE_URL%/}")
           ids=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${n}/comments" --paginate \
             --jq ".[] | select(.body | startswith(\"${marker}\")) | .id")
