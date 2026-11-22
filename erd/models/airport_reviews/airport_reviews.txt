@@ -8,6 +8,11 @@ date_visit_id FK >- dim_date.date_id
 is_verified
 experience_at_airport
 type_of_traveller
+traveller_type_id FK >- dim_traveller_type.traveller_type_id
+review_channel_id FK >- dim_review_channel.review_channel_id
+review_language
+submission_device
+helpful_votes
 queuing_times
 terminal_cleanliness
 terminal_seating

@@ -46,3 +46,15 @@ dim_date
 date_id PK
 is_weekend
 fin_year
+
+dim_traveller_type
+-
+traveller_type_id PK
+traveller_type_name
+traveller_type_group
+
+dim_review_channel
+-
+review_channel_id PK
+channel_name
+is_mobile

@@ -116,3 +116,35 @@ models:
         description: Fiscal year, assuming a 1 July start.
         data_type: bigint
         data_tests: [not_null]
+
+  - name: dim_traveller_type
+    description: "Conformed traveller-type dimension. Grain: one row per trip party the reviewer named."
+    columns:
+      - name: traveller_type_id
+        description: Primary key.
+        data_type: bigint
+        data_tests: [unique, not_null]
+      - name: traveller_type_name
+        description: Solo Leisure, Couple Leisure, Family Leisure, Business, or unknown.
+        data_type: varchar
+        data_tests: [not_null]
+      - name: traveller_type_group
+        description: leisure, work, or unknown.
+        data_type: varchar
+        data_tests: [not_null]
+
+  - name: dim_review_channel
+    description: "Channel the review was submitted on. Grain: one row per channel."
+    columns:
+      - name: review_channel_id
+        description: Primary key.
+        data_type: bigint
+        data_tests: [unique, not_null]
+      - name: channel_name
+        description: website, ios, android, or unknown.
+        data_type: varchar
+        data_tests: [not_null]
+      - name: is_mobile
+        description: True when the channel is a phone app.
+        data_type: boolean
+        data_tests: [not_null]
