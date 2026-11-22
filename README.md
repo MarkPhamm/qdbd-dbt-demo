@@ -2,7 +2,7 @@
 
 A working demo of [qdbd](https://qdbd.dev/) on a real dbt project. Four star schemas on DuckDB, two hand-written diagrams, and a `# @dbt:` line in each that pulls descriptions, tags and column types straight from the dbt yml. CI checks both diagrams against the yml, every pull request gets a schema diff, and each environment publishes its own pages.
 
-**Live diagrams:** [production](https://markphamm.github.io/qdbd-dbt-demo/) · [sources](https://markphamm.github.io/qdbd-dbt-demo/sources.html) · [qa vs main](https://markphamm.github.io/qdbd-dbt-demo/qa/) · [dev vs qa](https://markphamm.github.io/qdbd-dbt-demo/dev/) · [open pull requests](https://markphamm.github.io/qdbd-dbt-demo/pr/)
+**Live diagrams:** [production](https://markphamm.github.io/qdbd-dbt-demo/) · [sources](https://markphamm.github.io/qdbd-dbt-demo/sources.html) · [qa](https://markphamm.github.io/qdbd-dbt-demo/qa/) · [dev](https://markphamm.github.io/qdbd-dbt-demo/dev/) · [open pull requests](https://markphamm.github.io/qdbd-dbt-demo/pr/)
 
 [![The production model diagram in qdbd: four star schemas in shaded regions around the conformed dimensions](docs/images/qdbd-overview.png)](https://markphamm.github.io/qdbd-dbt-demo/)
 
@@ -53,9 +53,9 @@ In the Filter box, `tag:pii` narrows 13 tables to `dim_customer`. Its table desc
 
 ### A branch shows what merging it changes
 
-[![fct_airline_review selected on qa, marked CHANGED, with + cabin_id and - seat_type in the detail panel, and dim_cabin marked NEW](docs/images/qdbd-diff.png)](https://markphamm.github.io/qdbd-dbt-demo/qa/#t=fct_airline_review)
+[![fct_airline_review selected, marked CHANGED, with + cabin_id and - seat_type in the detail panel, and dim_cabin marked NEW](docs/images/qdbd-diff.png)](https://markphamm.github.io/qdbd-dbt-demo/pr/)
 
-`/qa/` is built with `--by-group --diff-base main`. `dim_cabin` is green (new); `fct_airline_review` is amber (changed). Selecting the fact lists `+ cabin_id` and `- seat_type`; the banner counts the two new relationships. The same change is what `release-ci-qdbd` comments on the promotion pull request, in the `erd/models` section.
+The colouring is the pull request, not the environment page. `/`, `/qa/`, and `/dev/` each publish that branch's own model diagram, and `sources.html` beside each publishes that branch's own source diagram. A pull request into `main` is coloured against `main`, one into `qa` against `qa`, and one into `dev` against `dev`. The comment links `/pr/N/` for the model diagram and `/pr/N/sources.html` for the source diagram. In this shot, `dim_cabin` is green (new) and `fct_airline_review` is amber (changed).
 
 ## Setup
 
@@ -209,8 +209,8 @@ Changes move `feature → dev → qa → main`, one pull request per hop.
 | Branch | Ahead of the next one by | Pages |
 |---|---|---|
 | `main` | (production) | [`/`](https://markphamm.github.io/qdbd-dbt-demo/) and [`/sources.html`](https://markphamm.github.io/qdbd-dbt-demo/sources.html) |
-| `qa` | `dim_cabin`, a conformed dimension, with `cabin_id` on the airline and seat facts | [`/qa/`](https://markphamm.github.io/qdbd-dbt-demo/qa/), coloured against `main` |
-| `dev` | `dim_route` built as a model, with `route_id` on `fct_airline_review` | [`/dev/`](https://markphamm.github.io/qdbd-dbt-demo/dev/), coloured against `qa` |
+| `qa` | `dim_cabin`, a conformed dimension, with `cabin_id` on the airline and seat facts | [`/qa/`](https://markphamm.github.io/qdbd-dbt-demo/qa/) and [`/qa/sources.html`](https://markphamm.github.io/qdbd-dbt-demo/qa/sources.html), qa's own diagrams |
+| `dev` | `dim_route` built as a model, with `route_id` on `fct_airline_review` | [`/dev/`](https://markphamm.github.io/qdbd-dbt-demo/dev/) and [`/dev/sources.html`](https://markphamm.github.io/qdbd-dbt-demo/dev/sources.html), dev's own diagrams |
 
 On `qa` or `dev`:
 
@@ -254,7 +254,7 @@ A pull request into `dev` or `qa` runs three jobs. A pull request into `main` ru
 | `release-cd-qdbd` | push to `dev`, `qa`, or `main` | the same strict qdbd check. No comment |
 | `pages` | after `feature-cd-qdbd`, `release-ci-qdbd`, `feature-cd-dbt`, or `release-cd-dbt` | rebuild `/`, `/qa/`, `/dev/`, and `/pr/N/` with `qdbd build --by-group`, then deploy |
 
-`/`, `/qa/`, and `/dev/` are the model diagram (`index.html`). `sources.html` beside each is the source diagram. `/qa/` is coloured against `main`, `/dev/` against `qa`, and `/pr/N/` against that pull request's base. `qdbd build --site` is not used: it would replace `index.html` with a link page.
+`/`, `/qa/`, and `/dev/` are each that branch's own model diagram (`index.html`). `sources.html` beside each is that branch's own source diagram. Neither page is coloured against another branch. `/pr/N/` is the pull request's model diagram coloured against its base, and `/pr/N/sources.html` is the source diagram coloured the same way. `qdbd build --site` is not used: it would replace `index.html` with a link page, and `qdbd build erd` would draw model and source on one canvas.
 
 [![The qdbd comment on the qa to main pull request, from before the diagrams were split: 1 table added, 2 changed, 2 relationships added](docs/images/qdbd-pr-comment.png)](https://github.com/MarkPhamm/qdbd-dbt-demo/pull/2)
 
@@ -308,7 +308,7 @@ These are the steps this repo took, in order. They work the same in a copy of it
 1. Branch from `dev`. Change a model and its yml. Update the file under `erd/models/` in the same commit. A source change updates the matching file under `erd/sources/`.
 2. Run `qdbd check --each --strict erd/models erd/sources`. It fails if a diagram and the yml disagree, and so does CI. The pre-commit hook runs the same command.
 3. Open a pull request into `dev`. Read the qdbd comment. Merge.
-4. `feature-cd-dbt` rebuilds `dev`, and `pages` republishes `/dev/` and `/dev/sources.html`, coloured against `qa`, with `--by-group`.
+4. `feature-cd-dbt` rebuilds `dev`, and `pages` republishes `/dev/` and `/dev/sources.html` as dev's own diagrams, with `--by-group`. The coloured comparison is the open pull request into `qa`.
 5. Promote with a pull request `dev → qa`, then `qa → main`. Each merge rebuilds that environment and its pages.
 
 A fix made straight on `main` goes back down with a merge, not a rebase, so open pull requests keep their diffs:
@@ -323,7 +323,7 @@ git checkout dev && git merge qa && git push
 - **Slim CI defers to the base branch, not to prod.** A pull request into `qa` is checked against what `qa` already has. `feature-cd-dbt` and `release-cd-dbt` upload under the same artifact name, and the dbt CI workflows pick the file that matches the base branch.
 - **The qdbd check shares nothing with slim CI.** The yml link needs no build, so the diagram check stays green even when no dbt CD has run yet.
 - **`pages` runs after the preview and the dbt CD, not on every push.** A `workflow_run` job runs on the default branch, and the `github-pages` environment only accepts deploys from the default branch. Every deploy rebuilds every folder, so a push to `dev` never wipes `/qa/`.
-- **Pages uses `--by-group`.** Each file is a shaded region. Saved positions in `qdbd.layout.json` are for `qdbd serve`. The published page lays the groups out fresh.
+- **Pages uses `--by-group`.** Each file is a shaded region. Saved positions in `qdbd.layout.json` are for `qdbd serve`. The published page lays the groups out fresh. `/`, `/qa/`, and `/dev/` are those branches as committed. Only `/pr/N/` is coloured, against the branch that pull request merges into.
 - **One DuckDB file per run.** CI downloads the base branch's `database.duckdb` and writes into its own `ci_pr_<n>` schema in that copy. Nothing it does reaches an environment.
 
 ### On a real warehouse

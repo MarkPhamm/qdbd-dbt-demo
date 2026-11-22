@@ -1,16 +1,18 @@
 # Pages. One site, rebuilt on every deploy so one push never wipes another folder.
 #
-#   /            main, model diagram, built with --by-group
+#   /            main's own model diagram
 #   /sources.html
-#   /qa/         qa, coloured against main
+#   /qa/         qa's own model diagram, not a diff against main
 #   /qa/sources.html
-#   /dev/        dev, coloured against qa
+#   /dev/        dev's own model diagram, not a diff against qa
 #   /dev/sources.html
-#   /pr/N/       open pull request N, coloured against the branch it merges into
+#   /pr/N/       that pull request's model diagram, coloured against its base
+#   /pr/N/sources.html
 #   /pr/         list of those pull requests
 #
-# A branch that still has the diagram at erd/ (no erd/models/) is built from
-# that folder, so qa and main keep publishing during the promotion.
+# Model and source are always two builds. qdbd build erd would compile both
+# into one schema. A branch that still has the diagram directly under erd/
+# (no erd/models/) is built from that folder alone, and only as the model page.
 #
 # workflow_run runs on the default branch. The github-pages environment only
 # accepts deploys from the default branch unless its rules are widened.
@@ -53,18 +55,25 @@ jobs:
           set -euo pipefail
           qdbd() { uvx --from "quickdbd-cli==0.6.11" qdbd "$@"; }
 
-          # --by-group draws one shaded region per file and ignores saved positions.
+          # --by-group draws one shaded region per file. One root per call, so
+          # the model page never contains the source tables.
+          build_root() {
+            local dir="$1" root="$2" dest="$3"
+            shift 3
+            (cd "$dir" && qdbd build --by-group "$root" -o "$dest" "$@")
+          }
+
           build_tree() {
             local dir="$1" out="$2"
             shift 2
             mkdir -p "$out"
             if [ -d "$dir/erd/models" ]; then
-              (cd "$dir" && qdbd build --by-group erd/models -o "$out/index.html" "$@")
+              build_root "$dir" erd/models "$out/index.html" "$@"
               if [ -d "$dir/erd/sources" ]; then
-                (cd "$dir" && qdbd build --by-group erd/sources -o "$out/sources.html" "$@")
+                build_root "$dir" erd/sources "$out/sources.html" "$@"
               fi
             else
-              (cd "$dir" && qdbd build --by-group erd -o "$out/index.html" "$@")
+              build_root "$dir" erd "$out/index.html" "$@"
             fi
           }
 
@@ -74,8 +83,8 @@ jobs:
           git worktree add --detach envs/qa origin/qa
           git worktree add --detach envs/dev origin/dev
           build_tree envs/main "$GITHUB_WORKSPACE/site"
-          build_tree envs/qa "$GITHUB_WORKSPACE/site/qa" --diff-base origin/main
-          build_tree envs/dev "$GITHUB_WORKSPACE/site/dev" --diff-base origin/qa
+          build_tree envs/qa "$GITHUB_WORKSPACE/site/qa"
+          build_tree envs/dev "$GITHUB_WORKSPACE/site/dev"
 
           : > "$RUNNER_TEMP/pr-lines.html"
           while IFS=$'\t' read -r num base; do
