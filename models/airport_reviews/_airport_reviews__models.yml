@@ -16,6 +16,15 @@ models:
         description: Lowercased, trimmed airport name.
         data_type: varchar
         data_tests: [not_null]
+      - name: terminal_count
+        description: Terminals the airport operates.
+        data_type: bigint
+      - name: has_rail_link
+        description: True when a train serves the airport.
+        data_type: boolean
+      - name: timezone_name
+        description: IANA timezone of the airport.
+        data_type: varchar
 
   - name: fct_airport_review
     description: >
@@ -35,6 +44,21 @@ models:
               arguments:
                 to: ref('dim_airport')
                 field: airport_id
+      - name: terminal_id
+        description: FK to dim_terminal.
+        data_type: bigint
+      - name: security_wait_minutes
+        description: Minutes spent in the security queue.
+        data_type: bigint
+      - name: queue_rating
+        description: 1 to 5 score for queueing.
+        data_type: bigint
+      - name: wayfinding_rating
+        description: 1 to 5 score for signs and wayfinding.
+        data_type: bigint
+      - name: seating_rating
+        description: 1 to 5 score for terminal seating.
+        data_type: bigint
       - name: customer_id
         description: FK to dim_customer.
         data_type: varchar
@@ -149,3 +173,24 @@ models:
       - name: dbt_loaded_at
         data_type: timestamptz
         data_tests: [not_null]
+
+  - name: dim_terminal
+    description: "Terminal inside an airport. Grain: one row per terminal."
+    columns:
+      - name: terminal_id
+        description: Primary key.
+        data_type: bigint
+        data_tests: [unique, not_null]
+      - name: terminal_name
+        description: Terminal name, or unknown.
+        data_type: varchar
+        data_tests: [not_null]
+      - name: airport_id
+        description: FK to dim_airport.
+        data_type: bigint
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_airport')
+                field: airport_id

@@ -2,6 +2,11 @@ fct_airport_review
 -
 review_id PK
 airport_id FK >- dim_airport.airport_id
+terminal_id FK >- dim_terminal.terminal_id
+security_wait_minutes
+queue_rating
+wayfinding_rating
+seating_rating
 customer_id FK >- dim_customer.customer_id
 date_submitted_id FK >- dim_date.date_id
 date_visit_id FK >- dim_date.date_id
@@ -37,3 +42,12 @@ dim_airport
 airport_id PK
 airport_name
 airport_name_cleaned
+terminal_count
+has_rail_link
+timezone_name
+
+dim_terminal
+-
+terminal_id PK
+terminal_name
+airport_id FK >- dim_airport.airport_id
