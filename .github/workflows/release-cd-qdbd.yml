@@ -25,4 +25,4 @@ jobs:
           python-version: "3.12"
 
       - name: Check both diagrams
-        run: uvx --from "quickdbd-cli==0.6.11" qdbd check --each --strict erd/models erd/sources
+        run: uvx --from "quickdbd-cli==0.6.12" qdbd check --each --strict erd/models erd/sources

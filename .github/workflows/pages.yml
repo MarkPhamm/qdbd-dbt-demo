@@ -54,7 +54,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          qdbd() { uvx --from "quickdbd-cli==0.6.11" qdbd "$@"; }
+          qdbd() { uvx --from "quickdbd-cli==0.6.12" qdbd "$@"; }
 
           # models is the model page. At the site root that file is model.html,
           # because index.html is the directory. Inside qa/, dev/, and pr/N/
