@@ -59,11 +59,11 @@ The colouring is the pull request, not the environment page. `/` is the director
 
 ## Setup
 
-Python 3.12 and [uv](https://docs.astral.sh/uv/). qdbd 0.6.11, the same pin as CI:
+Python 3.12 and [uv](https://docs.astral.sh/uv/). qdbd 0.6.12, the same pin as CI:
 
 ```bash
 uv sync
-uv tool install "quickdbd-cli==0.6.11"
+uv tool install "quickdbd-cli==0.6.12"
 uv run dbt deps
 uv run dbt build
 qdbd serve --by-group erd/models
@@ -271,7 +271,7 @@ These are the steps this repo took, in order. They work the same in a copy of it
    - `erd/models/` and `erd/sources/`, each with one `# @dbt:` line pointing at the folder that holds `dbt_project.yml`
    - `.pre-commit-config.yaml`
 
-   Keep `quickdbd-cli==0.6.11` in `pages.yml` and `MarkPhamm/quickdbd-cli@v0.6.11` in the qdbd workflows on the same version.
+   Keep `quickdbd-cli==0.6.12` in `pages.yml` and `MarkPhamm/quickdbd-cli@v0.6.12` in the qdbd workflows on the same version.
 
 2. **Check locally before pushing:**
 

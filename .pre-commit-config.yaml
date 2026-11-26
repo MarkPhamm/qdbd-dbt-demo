@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/MarkPhamm/quickdbd-cli
-    rev: v0.6.11
+    rev: v0.6.12
     hooks:
       - id: qdbd-check
         # Two diagrams. Pass each root: a glob of erd/*/ would split the star
